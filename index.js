@@ -257,17 +257,22 @@ dotenv.config();
 const app = express();
 
 // Enable CORS for frontend (http://localhost:3000)
-const allowedOrigins = ['http://localhost:3000', 'http://localhost:3001'];  // Add any other domains you need
+const allowedOrigins = [
+  'https://effulgent-lebkuchen-1b087d.netlify.app', // your deployed frontend
+  'http://localhost:3000' // for local testing
+];
+
 const corsOptions = {
   origin: function (origin, callback) {
-    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+    if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
     }
   },
-  methods: ['GET', 'POST', 'PUT','PATCH', 'DELETE'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true, // <- Add this if you're using cookies/auth
 };
 
 // Use CORS middleware with the defined options
