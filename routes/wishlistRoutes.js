@@ -12,6 +12,6 @@ const router = express.Router();
 router.get('/getwishlist', authenticateUser, getWishlist);
 router.post('/add', authenticateUser, addToWishlist);
 router.delete('/remove/:productId', authenticateUser, removeFromWishlist);
-router.post('/movetocart/:productId', authenticateUser, moveToCart);
+router.patch('/move/:productId', authenticateUser, moveToCart);
 
 export default router;
