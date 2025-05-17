@@ -258,7 +258,7 @@ const app = express();
 
 // Enable CORS for frontend (http://localhost:3000)
 const allowedOrigins = [
-  'https://gsienterprises.netlify.app/', // your deployed frontend
+  'https://gsienterprises.netlify.app', // your deployed frontend
   'http://localhost:3000' // for local testing
 ];
 
