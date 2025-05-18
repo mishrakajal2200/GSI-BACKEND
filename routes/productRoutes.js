@@ -18,6 +18,9 @@ router.post('/', createProduct);
 // Get all products (with filtering, sorting, pagination)
 router.get('/products', getAllProducts);
 
+// search products
+router.get("/search",searchProducts);
+
 // Get single product by ID
 router.get('/:id', getProductById);
 
@@ -27,6 +30,6 @@ router.put('/:id', updateProduct);
 // Delete product
 router.delete('/:id', deleteProduct);
 
-router.get("/search",searchProducts)
+
 
 export default router;

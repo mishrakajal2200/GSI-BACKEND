@@ -162,8 +162,9 @@ export const deleteProduct = async (req, res) => {
 };
 
 // searchbar
-
 export const searchProducts = async (req, res) => {
+  console.log("Received search query param:", req.query.query);
+
   const keyword = req.query.query;
 
   if (!keyword) {
