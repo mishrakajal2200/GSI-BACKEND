@@ -39,7 +39,7 @@ import authenticateUser from "../middleware/authMiddleware.js";
 const router = express.Router();
 
 // Create Razorpay order
-router.post('/create-order',authenticateUser,createRazorpayOrder)
+router.post('/create-order',authenticateUser,createRazorpayOrder);
 
 // COD route
 router.post("/place-order",authenticateUser, placeCODOrder);
