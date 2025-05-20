@@ -3,10 +3,11 @@ dotenv.config();
 import Razorpay from "razorpay";
 import Order from '../models/Order.js'
 // controllers/paymentController.js
+
 export const getOrders = async (req, res) => {
   try {
     const orders = await Order.find({ user: req.user.id }).sort({ createdAt: -1 });
-    res.json(orders);
+    res.status(200).json({ success: true, orders }); // ✅ Return as object
   } catch (err) {
     res.status(500).json({ message: "Failed to fetch orders" });
   }
