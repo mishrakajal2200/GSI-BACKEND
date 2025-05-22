@@ -5,8 +5,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import nodemailer from 'nodemailer';
 import bodyParser from 'body-parser';
-// import bcrypt from 'bcryptjs'; // Add bcrypt import
-// import User from './models/User.js'; // Add User model import
+import bcrypt from 'bcryptjs'; // Add bcrypt import
+import User from './models/User.js'; // Add User model import
 import productRoutes from './routes/productRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import subscribeRoutes from './routes/subscribeRoutes.js';
@@ -99,35 +99,32 @@ mongoose.connect(process.env.MONGO_URI, {
 }).catch(err => console.log(err));
 
 // Function to create admin user
-// const createAdmin = async () => {
-//   try {
-//     const adminExists = await User.findOne({ email: 'gsienterprisesgautam@gmail.com' });
-//     if (adminExists) {
-//       console.log('✅ Admin already exists');
-//       return;
-//     }
+const createAdmin = async () => {
+  await mongoose.connect(process.env.MONGO_URI);
 
-//     const hashedPassword = await bcrypt.hash('admin123', 10);
+  const existingAdmin = await User.findOne({ email: 'admin@example.com' });
+  if (existingAdmin) {
+    console.log('Admin already exists');
+    return;
+  }
 
-//     const admin = new User({
-//       name: 'Super Admin',
-//       email: 'gsienterprisesgautam@gmail.com',
-//       password: hashedPassword,
-//       role: 'admin',
-//     });
+  const hashedPassword = await bcrypt.hash('admin123', 10);
 
-//     await admin.save();
-//     console.log('✅ Admin user created successfully');
-//   } catch (error) {
-//     console.error('❌ Error creating admin:', error);
-//   }
-// };
+  const adminUser = new User({
+    name: 'Admin User',
+    email: 'admin@example.com',
+    password: hashedPassword,
+    role: 'admin',
+  });
+
+  await adminUser.save();
+  console.log('Admin user created');
+  mongoose.disconnect();
+};
+
+createAdmin();
 
 
-// Call createAdmin once when the server starts (only in development or testing, not in production)
-if (process.env.NODE_ENV === 'development') {
-  createAdmin();
-}
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
