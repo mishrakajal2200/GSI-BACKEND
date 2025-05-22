@@ -5,8 +5,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import nodemailer from 'nodemailer';
 import bodyParser from 'body-parser';
-import bcrypt from 'bcryptjs'; // Add bcrypt import
-import User from './models/User.js'; // Add User model import
+// import bcrypt from 'bcryptjs'; // Add bcrypt import
+// import User from './models/User.js'; // Add User model import
 import productRoutes from './routes/productRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import subscribeRoutes from './routes/subscribeRoutes.js';
@@ -99,29 +99,29 @@ mongoose.connect(process.env.MONGO_URI, {
 }).catch(err => console.log(err));
 
 // Function to create admin user
-const createAdmin = async () => {
-  try {
-    const adminExists = await User.findOne({ email: 'gsienterprisesgautam@gmail.com' });
-    if (adminExists) {
-      console.log('✅ Admin already exists');
-      return;
-    }
+// const createAdmin = async () => {
+//   try {
+//     const adminExists = await User.findOne({ email: 'gsienterprisesgautam@gmail.com' });
+//     if (adminExists) {
+//       console.log('✅ Admin already exists');
+//       return;
+//     }
 
-    const hashedPassword = await bcrypt.hash('admin123', 10);
+//     const hashedPassword = await bcrypt.hash('admin123', 10);
 
-    const admin = new User({
-      name: 'Super Admin',
-      email: 'gsienterprisesgautam@gmail.com',
-      password: hashedPassword,
-      role: 'admin',
-    });
+//     const admin = new User({
+//       name: 'Super Admin',
+//       email: 'gsienterprisesgautam@gmail.com',
+//       password: hashedPassword,
+//       role: 'admin',
+//     });
 
-    await admin.save();
-    console.log('✅ Admin user created successfully');
-  } catch (error) {
-    console.error('❌ Error creating admin:', error);
-  }
-};
+//     await admin.save();
+//     console.log('✅ Admin user created successfully');
+//   } catch (error) {
+//     console.error('❌ Error creating admin:', error);
+//   }
+// };
 
 
 // Call createAdmin once when the server starts (only in development or testing, not in production)
