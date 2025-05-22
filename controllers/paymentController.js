@@ -17,7 +17,6 @@ export const getOrders = async (req, res) => {
 
 // controllers/paymentController.js
 
-
 export const placeCODOrder = async (req, res) => {
   try {
     const { items, shippingAddress, totalPrice, paymentMethod } = req.body;
