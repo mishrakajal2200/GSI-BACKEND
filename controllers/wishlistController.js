@@ -53,33 +53,39 @@ export const addToWishlist = async (req, res) => {
       return res.status(400).json({ message: 'Product ID is required' });
     }
 
+    // Check if product exists
     const product = await Product.findById(productId);
-    if (!product) return res.status(404).json({ message: 'Product not found' });
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
 
     const user = await User.findById(userId);
-    if (!user.wishlist) user.wishlist = [];
 
+    // Initialize wishlist array if undefined
+    if (!user.wishlist) {
+      user.wishlist = [];
+    }
+
+    // Check if product already in wishlist
     const exists = user.wishlist.some(
-      (item) => item.productId?.toString() === productId
+      (item) => item.toString() === productId
     );
     if (exists) {
       return res.status(400).json({ message: 'Product already in wishlist' });
     }
 
-    user.wishlist.push({
-      productId,
-      name: product.name,
-      image: product.image,
-      price: product.price,
-    });
+    // Push only the productId
+    user.wishlist.push(productId);
 
     await user.save();
+
     res.status(200).json({ wishlist: user.wishlist });
   } catch (err) {
     console.error('Add to wishlist error:', err);
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
+
 
 
 // Remove from Wishlist
