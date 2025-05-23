@@ -322,7 +322,6 @@ export const moveToCart = async (req, res) => {
 
     console.log("Fetching populated user...");
     const updatedUser = await User.findById(userId)
-      .populate('wishlist') // ✅ If you want this like in removeWishlist
       .populate({
         path: 'wishlist.productId',
         select: 'name price image',
@@ -332,20 +331,25 @@ export const moveToCart = async (req, res) => {
         select: 'name price image',
       });
 
-    const wishlistItems = updatedUser.wishlist.map(item => ({
-      productId: item.productId?._id,
-      name: item.productId?.name,
-      price: item.productId?.price,
-      image: item.productId?.image,
-    }));
+    // Filter out null or missing productId references
+    const wishlistItems = updatedUser.wishlist
+      .filter(item => item.productId) // prevent `{}` issue
+      .map(item => ({
+        productId: item.productId._id,
+        name: item.productId.name,
+        price: item.productId.price,
+        image: item.productId.image,
+      }));
 
-    const cartItems = updatedUser.cart.map(item => ({
-  productId: item.productId?._id, // ✅ optional chaining prevents crash
-  name: item.productId?.name,
-  price: item.productId?.price,
-  image: item.productId?.image,
-  quantity: item.quantity,
-}));
+    const cartItems = updatedUser.cart
+      .filter(item => item.productId) // extra safety
+      .map(item => ({
+        productId: item.productId._id,
+        name: item.productId.name,
+        price: item.productId.price,
+        image: item.productId.image,
+        quantity: item.quantity,
+      }));
 
     console.log("Returning response...");
     res.status(200).json({
@@ -359,4 +363,5 @@ export const moveToCart = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
+
 
