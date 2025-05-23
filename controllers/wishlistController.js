@@ -340,12 +340,12 @@ export const moveToCart = async (req, res) => {
     }));
 
     const cartItems = updatedUser.cart.map(item => ({
-      productId: item.productId?._id,
-      name: item.productId?.name,
-      price: item.productId?.price,
-      image: item.productId?.image,
-      quantity: item.quantity,
-    }));
+  productId: item.productId?._id, // ✅ optional chaining prevents crash
+  name: item.productId?.name,
+  price: item.productId?.price,
+  image: item.productId?.image,
+  quantity: item.quantity,
+}));
 
     console.log("Returning response...");
     res.status(200).json({
