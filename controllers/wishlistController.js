@@ -279,19 +279,25 @@ export const getWishlist = async (req, res) => {
 
 export const moveToCart = async (req, res) => {
   try {
+    console.log("moveToCart called");
+
     if (!req.user || !req.user._id) {
-      return res.status(401).json({ message: 'Unauthorized' });
+      console.log("User not authenticated");
+      return res.status(401).json({ message: 'Unauthorized: User not authenticated' });
     }
 
     const userId = req.user._id;
     const { productId } = req.params;
+    console.log("User ID:", userId, "Product ID:", productId);
 
     if (!productId) {
+      console.log("Missing product ID");
       return res.status(400).json({ message: 'Product ID is required' });
     }
 
     const user = await User.findById(userId);
     if (!user) {
+      console.log("User not found in DB");
       return res.status(404).json({ message: 'User not found' });
     }
 
@@ -308,12 +314,15 @@ export const moveToCart = async (req, res) => {
     if (existingCartItem) {
       existingCartItem.quantity += 1;
     } else {
-      user.cart.push({ productId });
+      user.cart.push({ productId, quantity: 1 });
     }
 
+    console.log("Saving updated user...");
     await user.save();
 
+    console.log("Fetching populated user...");
     const updatedUser = await User.findById(userId)
+      .populate('wishlist') // ✅ If you want this like in removeWishlist
       .populate({
         path: 'wishlist.productId',
         select: 'name price image',
@@ -331,13 +340,14 @@ export const moveToCart = async (req, res) => {
     }));
 
     const cartItems = updatedUser.cart.map(item => ({
-      productId: item.productId?._id,
-      name: item.productId?.name,
-      price: item.productId?.price,
-      image: item.productId?.image,
-      quantity: item.quantity,
-    }));
+  productId: item.productId?._id, // ✅ optional chaining prevents crash
+  name: item.productId?.name,
+  price: item.productId?.price,
+  image: item.productId?.image,
+  quantity: item.quantity,
+}));
 
+    console.log("Returning response...");
     res.status(200).json({
       message: 'Moved to cart successfully',
       wishlist: wishlistItems,
@@ -349,5 +359,4 @@ export const moveToCart = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
-
 
