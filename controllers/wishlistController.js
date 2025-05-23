@@ -295,12 +295,12 @@ export const moveToCart = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Remove from wishlist
+    // ✅ Remove from wishlist
     user.wishlist = user.wishlist.filter(
       (item) => item.productId?.toString() !== productId
     );
 
-    // Add to cart
+    // ✅ Add to cart
     const existingCartItem = user.cart.find(
       (item) => item.productId?.toString() === productId
     );
@@ -311,43 +311,50 @@ export const moveToCart = async (req, res) => {
       user.cart.push({ productId });
     }
 
+    // ✅ Save changes
     await user.save();
 
+    // ✅ Fetch updated user with product details populated
     const updatedUser = await User.findById(userId)
       .populate({
-        path: 'wishlist.productId',
-        select: 'name price image',
+        path: "wishlist.productId",
+        select: "name price image", // <-- Must match Product fields
       })
       .populate({
-        path: 'cart.productId',
-        select: 'name price image',
+        path: "cart.productId",
+        select: "name price image",
       });
 
-    const wishlistItems = updatedUser.wishlist.map(item => ({
-      productId: item.productId?._id,
-      name: item.productId?.name,
-      price: item.productId?.price,
-      image: item.productId?.image,
-    }));
+    // ✅ Format wishlist and cart
+    const wishlistItems = updatedUser.wishlist
+      .filter(item => item.productId) // Filter out nulls
+      .map(item => ({
+        productId: item.productId._id,
+        name: item.productId.name,
+        price: item.productId.price,
+        image: item.productId.image,
+      }));
 
-    const cartItems = updatedUser.cart.map(item => ({
-      productId: item.productId?._id,
-      name: item.productId?.name,
-      price: item.productId?.price,
-      image: item.productId?.image,
-      quantity: item.quantity,
-    }));
+    const cartItems = updatedUser.cart
+      .filter(item => item.productId)
+      .map(item => ({
+        productId: item.productId._id,
+        name: item.productId.name,
+        price: item.productId.price,
+        image: item.productId.image,
+        quantity: item.quantity,
+      }));
 
     res.status(200).json({
-      message: 'Moved to cart successfully',
+      message: "Moved to cart successfully",
       wishlist: wishlistItems,
       cart: cartItems,
     });
-
   } catch (err) {
     console.error("Error in moveToCart:", err);
-    res.status(500).json({ message: 'Server error', error: err.message });
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+
 
 
