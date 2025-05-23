@@ -194,6 +194,89 @@ export const getWishlist = async (req, res) => {
 
 
 // Move to Cart
+// export const moveToCart = async (req, res) => {
+//   try {
+//     console.log("moveToCart called");
+
+//     if (!req.user || !req.user._id) {
+//       console.log("User not authenticated");
+//       return res.status(401).json({ message: 'Unauthorized: User not authenticated' });
+//     }
+
+//     const userId = req.user._id;
+//     const { productId } = req.params;
+//     console.log("User ID:", userId, "Product ID:", productId);
+
+//     if (!productId) {
+//       console.log("Missing product ID");
+//       return res.status(400).json({ message: 'Product ID is required' });
+//     }
+
+//     const user = await User.findById(userId);
+//     if (!user) {
+//       console.log("User not found in DB");
+//       return res.status(404).json({ message: 'User not found' });
+//     }
+
+//     // Remove from wishlist
+//     user.wishlist = user.wishlist.filter(
+//       (item) => item.productId?.toString() !== productId
+//     );
+
+//     // Add to cart
+//     const existingCartItem = user.cart.find(
+//       (item) => item.productId?.toString() === productId
+//     );
+
+//     if (existingCartItem) {
+//       existingCartItem.quantity += 1;
+//     } else {
+//       user.cart.push({ productId, quantity: 1 });
+//     }
+
+//     console.log("Saving updated user...");
+//     await user.save();
+
+//     console.log("Fetching populated user...");
+//     const updatedUser = await User.findById(userId)
+//       .populate({
+//         path: 'wishlist.productId',
+//         select: 'name price image',
+//       })
+//       .populate({
+//         path: 'cart.productId',
+//         select: 'name price image',
+//       });
+
+//     const wishlistItems = updatedUser.wishlist.map(item => ({
+//       productId: item.productId?._id,
+//       name: item.productId?.name,
+//       price: item.productId?.price,
+//       image: item.productId?.image,
+//     }));
+
+//     const cartItems = updatedUser.cart.map(item => ({
+//       productId: item.productId?._id,
+//       name: item.productId?.name,
+//       price: item.productId?.price,
+//       image: item.productId?.image,
+//       quantity: item.quantity,
+//     }));
+
+//     console.log("Returning response...");
+//     res.status(200).json({
+//       message: 'Moved to cart successfully',
+//       wishlist: wishlistItems,
+//       cart: cartItems,
+//     });
+
+//   } catch (err) {
+//     console.error("Error in moveToCart:", err);
+//     res.status(500).json({ message: 'Server error', error: err.message });
+//   }
+// };
+
+
 export const moveToCart = async (req, res) => {
   try {
     console.log("moveToCart called");
@@ -239,6 +322,7 @@ export const moveToCart = async (req, res) => {
 
     console.log("Fetching populated user...");
     const updatedUser = await User.findById(userId)
+      .populate('wishlist') // ✅ If you want this like in removeWishlist
       .populate({
         path: 'wishlist.productId',
         select: 'name price image',
