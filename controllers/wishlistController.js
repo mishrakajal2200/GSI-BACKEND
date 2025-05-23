@@ -127,19 +127,33 @@ export const addToWishlist = async (req, res) => {
 //     res.status(500).json({ message: 'Server error', error: err.message });
 //   }
 // };
-const removeFromWishlist = async (productId) => {
+export const removeFromWishlist = async (req, res) => {
   try {
-    const token = localStorage.getItem('token');
-    await axios.delete(`https://gsi-backend-1.onrender.com/api/wishlist/remove/${productId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-    fetchWishlist(); // refresh the wishlist
+    const { productId } = req.params;
+    if (!productId) return res.status(400).json({ message: 'Product ID is required' });
+
+    const user = await User.findById(req.user._id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    const itemIndex = user.wishlist.findIndex(
+      (item) => item.toString() === productId
+    );
+
+    if (itemIndex === -1) {
+      return res.status(404).json({ message: 'Item not found in wishlist' });
+    }
+
+    user.wishlist.splice(itemIndex, 1);
+    await user.save();
+
+    const updatedUser = await User.findById(req.user._id).populate('wishlist');
+    res.status(200).json({ wishlist: updatedUser.wishlist });
   } catch (err) {
-    console.error('Error removing from wishlist:', err);
+    console.error('Remove from wishlist error:', err.message);
+    res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
+
 
 // Get Wishlist
 // export const getWishlist = async (req, res) => {
