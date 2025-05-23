@@ -212,7 +212,7 @@ export const moveToCart = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Remove from wishlist
+    // Remove product from wishlist
     user.wishlist = user.wishlist.filter(
       (item) => item.productId?.toString() !== productId
     );
@@ -230,7 +230,7 @@ export const moveToCart = async (req, res) => {
 
     await user.save();
 
-    // Populate for response
+    // Populate response
     const updatedUser = await User.findById(userId)
       .populate({
         path: 'wishlist.productId',
