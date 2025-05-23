@@ -196,6 +196,10 @@ export const getWishlist = async (req, res) => {
 // Move to Cart
 export const moveToCart = async (req, res) => {
   try {
+    if (!req.user || !req.user._id) {
+      return res.status(401).json({ message: 'Unauthorized: User not authenticated' });
+    }
+
     const userId = req.user._id;
     const { productId } = req.params;
 
@@ -213,7 +217,7 @@ export const moveToCart = async (req, res) => {
       (item) => item.productId?.toString() !== productId
     );
 
-    // Check if product already in cart
+    // Add to cart
     const existingCartItem = user.cart.find(
       (item) => item.productId?.toString() === productId
     );
@@ -226,7 +230,7 @@ export const moveToCart = async (req, res) => {
 
     await user.save();
 
-    // Populate updated wishlist and cart for frontend
+    // Populate for response
     const updatedUser = await User.findById(userId)
       .populate({
         path: 'wishlist.productId',
@@ -237,14 +241,14 @@ export const moveToCart = async (req, res) => {
         select: 'name price image',
       });
 
-    const wishlistItems = updatedUser.wishlist.map((item) => ({
+    const wishlistItems = updatedUser.wishlist.map(item => ({
       productId: item.productId._id,
       name: item.productId.name,
       price: item.productId.price,
       image: item.productId.image,
     }));
 
-    const cartItems = updatedUser.cart.map((item) => ({
+    const cartItems = updatedUser.cart.map(item => ({
       productId: item.productId._id,
       name: item.productId.name,
       price: item.productId.price,
@@ -257,6 +261,7 @@ export const moveToCart = async (req, res) => {
       wishlist: wishlistItems,
       cart: cartItems,
     });
+
   } catch (err) {
     console.error('Move to cart error:', err.message);
     res.status(500).json({ message: 'Server error', error: err.message });
