@@ -199,17 +199,21 @@ export const moveToCart = async (req, res) => {
     const userId = req.user._id;
     const { productId } = req.params;
 
-    if (!productId) return res.status(400).json({ message: 'Product ID is required' });
+    if (!productId) {
+      return res.status(400).json({ message: 'Product ID is required' });
+    }
 
     const user = await User.findById(userId);
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
 
     // Remove from wishlist
     user.wishlist = user.wishlist.filter(
       (item) => item.productId?.toString() !== productId
     );
 
-    // Check if product in cart
+    // Check if product already in cart
     const existingCartItem = user.cart.find(
       (item) => item.productId?.toString() === productId
     );
@@ -222,7 +226,7 @@ export const moveToCart = async (req, res) => {
 
     await user.save();
 
-    // Populate wishlist and cart for response
+    // Populate updated wishlist and cart for frontend
     const updatedUser = await User.findById(userId)
       .populate({
         path: 'wishlist.productId',
@@ -233,14 +237,14 @@ export const moveToCart = async (req, res) => {
         select: 'name price image',
       });
 
-    const wishlistItems = updatedUser.wishlist.map(item => ({
+    const wishlistItems = updatedUser.wishlist.map((item) => ({
       productId: item.productId._id,
       name: item.productId.name,
       price: item.productId.price,
       image: item.productId.image,
     }));
 
-    const cartItems = updatedUser.cart.map(item => ({
+    const cartItems = updatedUser.cart.map((item) => ({
       productId: item.productId._id,
       name: item.productId.name,
       price: item.productId.price,
@@ -258,3 +262,4 @@ export const moveToCart = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
+
