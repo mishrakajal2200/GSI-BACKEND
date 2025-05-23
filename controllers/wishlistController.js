@@ -301,14 +301,14 @@ export const moveToCart = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    // Remove from wishlist
+    // ✅ Remove from wishlist (since it's just an array of product ObjectIds)
     user.wishlist = user.wishlist.filter(
-      (item) => item.productId?.toString() !== productId
+      (item) => item.toString() !== productId
     );
 
-    // Add to cart
+    // ✅ Add to cart or update quantity
     const existingCartItem = user.cart.find(
-      (item) => item.productId?.toString() === productId
+      (item) => item.productId.toString() === productId
     );
 
     if (existingCartItem) {
@@ -317,32 +317,25 @@ export const moveToCart = async (req, res) => {
       user.cart.push({ productId, quantity: 1 });
     }
 
-    console.log("Saving updated user...");
+    // Save the updated user
     await user.save();
 
-    console.log("Fetching populated user...");
+    // ✅ Re-fetch user with populated data
     const updatedUser = await User.findById(userId)
-      .populate({
-        path: 'wishlist.productId',
-        select: 'name price image',
-      })
-      .populate({
-        path: 'cart.productId',
-        select: 'name price image',
-      });
+      .populate('wishlist', 'name price image') // wishlist is an array of Product refs
+      .populate('cart.productId', 'name price image'); // cart is array of objects with productId
 
-    // Filter out null or missing productId references
-    const wishlistItems = updatedUser.wishlist
-      .filter(item => item.productId) // prevent `{}` issue
-      .map(item => ({
-        productId: item.productId._id,
-        name: item.productId.name,
-        price: item.productId.price,
-        image: item.productId.image,
-      }));
+    // Format wishlist
+    const wishlistItems = updatedUser.wishlist.map(item => ({
+      productId: item._id,
+      name: item.name,
+      price: item.price,
+      image: item.image,
+    }));
 
+    // Format cart
     const cartItems = updatedUser.cart
-      .filter(item => item.productId) // extra safety
+      .filter(item => item.productId) // just in case
       .map(item => ({
         productId: item.productId._id,
         name: item.productId.name,
@@ -351,7 +344,7 @@ export const moveToCart = async (req, res) => {
         quantity: item.quantity,
       }));
 
-    console.log("Returning response...");
+    // Send response
     res.status(200).json({
       message: 'Moved to cart successfully',
       wishlist: wishlistItems,
