@@ -129,28 +129,42 @@ export const removeFromWishlist = async (req, res) => {
 };
 
 // Get Wishlist
+// export const getWishlist = async (req, res) => {
+//   try {
+//     const user = await User.findById(req.user._id).populate({
+//       path: 'wishlist.productId',
+//       select: 'name price image',
+//     });
+
+//     if (!user) return res.status(404).json({ message: 'User not found' });
+
+//     const wishlistItems = (user.wishlist || []).map(item => ({
+//       productId: item.productId._id,
+//       name: item.productId.name,
+//       price: item.productId.price,
+//       image: item.productId.image,
+//     }));
+
+//     res.status(200).json({ wishlist: wishlistItems });
+//   } catch (err) {
+//     console.error('Get wishlist error:', err.message);
+//     res.status(500).json({ message: 'Server error', error: err.message });
+//   }
+// };
 export const getWishlist = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).populate({
-      path: 'wishlist.productId',
-      select: 'name price image',
-    });
+    const userId = req.user._id;
 
+    const user = await User.findById(userId).populate('wishlist');
     if (!user) return res.status(404).json({ message: 'User not found' });
 
-    const wishlistItems = (user.wishlist || []).map(item => ({
-      productId: item.productId._id,
-      name: item.productId.name,
-      price: item.productId.price,
-      image: item.productId.image,
-    }));
-
-    res.status(200).json({ wishlist: wishlistItems });
+    res.status(200).json({ wishlist: user.wishlist });
   } catch (err) {
-    console.error('Get wishlist error:', err.message);
+    console.error('Get wishlist error:', err);
     res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
+
 
 // Move to Cart
 export const moveToCart = async (req, res) => {
