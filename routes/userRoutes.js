@@ -10,10 +10,10 @@ router.post('/login', loginUser);
 
 router.put('/checkout', authenticateUser, updateCheckoutDetails);
 // GET /api/users/profile - Fetch logged-in user data
-router.get('/getprofile', authenticateUser, getUserProfile);
+router.get('/profile', authenticateUser, getUserProfile);
 
 // PUT /api/users/profile - Update profile
-router.put('/putptofile', authenticateUser, updateUserProfile);
+router.put('/ptofile', authenticateUser, updateUserProfile);
 
 router.get("/search", searchProducts);
 
