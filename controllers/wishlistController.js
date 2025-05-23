@@ -89,42 +89,55 @@ export const addToWishlist = async (req, res) => {
 
 
 // Remove from Wishlist
-export const removeFromWishlist = async (req, res) => {
+// export const removeFromWishlist = async (req, res) => {
+//   try {
+//     const { productId } = req.params;
+//     if (!productId) return res.status(400).json({ message: 'Product ID is required' });
+
+//     const user = await User.findById(req.user._id);
+//     if (!user) return res.status(404).json({ message: 'User not found' });
+
+//     const itemIndex = user.wishlist.findIndex(
+//       (item) => item.productId?.toString() === productId
+//     );
+
+//     if (itemIndex === -1) {
+//       return res.status(404).json({ message: 'Item not found in wishlist' });
+//     }
+
+//     user.wishlist.splice(itemIndex, 1);
+//     await user.save();
+
+//     // Populate for frontend response
+//     const updatedUser = await User.findById(req.user._id).populate({
+//       path: 'wishlist.productId',
+//       select: 'name price image',
+//     });
+
+//     const wishlistItems = updatedUser.wishlist.map(item => ({
+//       productId: item.productId._id,
+//       name: item.productId.name,
+//       price: item.productId.price,
+//       image: item.productId.image,
+//     }));
+
+//     res.status(200).json({ wishlist: wishlistItems });
+//   } catch (err) {
+//     console.error('Remove from wishlist error:', err.message);
+//     res.status(500).json({ message: 'Server error', error: err.message });
+//   }
+// };
+const removeFromWishlist = async (productId) => {
   try {
-    const { productId } = req.params;
-    if (!productId) return res.status(400).json({ message: 'Product ID is required' });
-
-    const user = await User.findById(req.user._id);
-    if (!user) return res.status(404).json({ message: 'User not found' });
-
-    const itemIndex = user.wishlist.findIndex(
-      (item) => item.productId?.toString() === productId
-    );
-
-    if (itemIndex === -1) {
-      return res.status(404).json({ message: 'Item not found in wishlist' });
-    }
-
-    user.wishlist.splice(itemIndex, 1);
-    await user.save();
-
-    // Populate for frontend response
-    const updatedUser = await User.findById(req.user._id).populate({
-      path: 'wishlist.productId',
-      select: 'name price image',
+    const token = localStorage.getItem('token');
+    await axios.delete(`https://gsi-backend-1.onrender.com/api/wishlist/remove/${productId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
-
-    const wishlistItems = updatedUser.wishlist.map(item => ({
-      productId: item.productId._id,
-      name: item.productId.name,
-      price: item.productId.price,
-      image: item.productId.image,
-    }));
-
-    res.status(200).json({ wishlist: wishlistItems });
+    fetchWishlist(); // refresh the wishlist
   } catch (err) {
-    console.error('Remove from wishlist error:', err.message);
-    res.status(500).json({ message: 'Server error', error: err.message });
+    console.error('Error removing from wishlist:', err);
   }
 };
 
