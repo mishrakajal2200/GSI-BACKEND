@@ -16,41 +16,6 @@ export const createProduct = async (req, res) => {
   }
 };
 
-// @desc    Get all products with filtering, sorting, and pagination
-// @route   GET /api/products
-// export const getAllProducts = async (req, res) => {
-//   try {
-//     const { brands, categories, sort } = req.query;
-
-//     const filter = {};
-
-//     if (brands) {
-//       const brandArray = brands.split(',');
-//       filter.brand = { $in: brandArray };
-//     }
-
-//     if (categories) {
-//       const categoryArray = categories.split(',');
-//       // Match any of the category fields
-//       filter.$or = [
-//         { mainCategory: { $in: categoryArray } },
-//         { subCategory: { $in: categoryArray } },
-//         { subSubCategory: { $in: categoryArray } }
-//       ];
-//     }
-
-//     let sortOption = {};
-//     if (sort === 'low') sortOption.price = 1;
-//     else if (sort === 'high') sortOption.price = -1;
-
-//     const products = await Product.find(filter).sort(sortOption);
-
-//     res.status(200).json(products);
-//   } catch (error) {
-//     res.status(500).json({ message: 'Server Error', error });
-//   }
-// };
-
 
 export const getAllProducts = async (req, res) => {
   try {

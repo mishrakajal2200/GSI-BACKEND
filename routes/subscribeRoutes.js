@@ -26,4 +26,14 @@ router.post('/subscribe', async (req, res) => {
   }
 });
 
+router.get('/all', async (req, res) => {
+  try {
+    const subscribers = await Subscriber.find().sort({ subscribedAt: -1 });
+    res.status(200).json(subscribers);
+  } catch (err) {
+    console.error('Error fetching subscribers:', err);
+    res.status(500).json({ message: 'Server error while fetching subscribers' });
+  }
+});
+
 export default router;
