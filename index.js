@@ -22,7 +22,7 @@ const app = express();
 
 // Enable CORS for frontend (http://localhost:3000)
 const allowedOrigins = [
-  'https://gsienterprises.com', 'https://www.gsienterprises.com'
+  'https://gsienterprises.com', 'https://www.gsienterprises.com','https://preeminent-begonia-54c21c.netlify.app',
 ];
 
 const corsOptions = {
