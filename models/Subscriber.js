@@ -10,8 +10,12 @@ const subscriberSchema = new mongoose.Schema({
   subscribedAt: {
     type: Date,
     default: Date.now,
+  },
+  
+},{
+    timestamps: true, // ✅ adds createdAt and updatedAt automatically
   }
-});
+);
 
 const Subscriber = mongoose.model('Subscriber', subscriberSchema);
 
