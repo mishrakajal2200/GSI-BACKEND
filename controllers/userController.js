@@ -2,7 +2,7 @@
 import User from '../models/User.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-
+import asyncHandler from 'express-async-handler';
 
 // Signup
 export const registerUser = async (req, res) => {
@@ -149,5 +149,82 @@ export const getAllUsers = async (req, res) => {
     res.status(500).json({ message: 'Failed to get users' });
   }
 };
+
+
+// ✅ GET user by ID
+export const getUserById = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id).select('-password');
+  if (user) {
+    res.json(user);
+  } else {
+    res.status(404);
+    throw new Error('User not found');
+  }
+});
+
+// ✅ UPDATE user details (name, email)
+export const updateUserDetails = asyncHandler(async (req, res) => {
+  const { name, email } = req.body;
+  const user = await User.findById(req.params.id);
+
+  if (user) {
+    user.name = name || user.name;
+    user.email = email || user.email;
+
+    const updatedUser = await user.save();
+    res.json({
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      role: updatedUser.role,
+    });
+  } else {
+    res.status(404);
+    throw new Error('User not found');
+  }
+});
+
+// ✅ CHANGE user role
+export const updateUserRole = asyncHandler(async (req, res) => {
+  const { role } = req.body;
+  const user = await User.findById(req.params.id);
+
+  if (user) {
+    user.role = role || user.role;
+    const updatedUser = await user.save();
+    res.json({ message: `User role updated to ${updatedUser.role}` });
+  } else {
+    res.status(404);
+    throw new Error('User not found');
+  }
+});
+
+// ✅ BLOCK / UNBLOCK user
+export const blockUnblockUser = asyncHandler(async (req, res) => {
+  const { isBlocked } = req.body; // true to block, false to unblock
+  const user = await User.findById(req.params.id);
+
+  if (user) {
+    user.isBlocked = isBlocked;
+    await user.save();
+    res.json({ message: `User has been ${isBlocked ? 'blocked' : 'unblocked'}` });
+  } else {
+    res.status(404);
+    throw new Error('User not found');
+  }
+});
+
+// ✅ DELETE user
+export const deleteUser = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id);
+
+  if (user) {
+    await user.remove();
+    res.json({ message: 'User deleted successfully' });
+  } else {
+    res.status(404);
+    throw new Error('User not found');
+  }
+});
 
 
