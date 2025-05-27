@@ -80,22 +80,22 @@ router.get("/search", searchProducts);
 // 👇 Admin User Management Routes
 
 // Get all users (Admin only)
-router.get('/', authenticateUser, isAdmin, getAllUsers);
+router.get('/', authenticateUser, getAllUsers);
 
 // Get single user by ID
-router.get('/:id', authenticateUser, isAdmin, getUserById);
+router.get('/:id', authenticateUser,  getUserById);
 
 // Update user details
-router.put('/:id', authenticateUser, isAdmin, updateUserDetails);
+router.put('/:id', authenticateUser, updateUserDetails);
 
 // Change user role
-router.patch('/:id/role', authenticateUser, isAdmin, updateUserRole);
+router.patch('/:id/role', authenticateUser,  updateUserRole);
 
 // Block or Unblock user
-router.patch('/:id/status', authenticateUser, isAdmin, blockUnblockUser);
+router.patch('/:id/status', authenticateUser, blockUnblockUser);
 
 // Delete a user
-router.delete('/:id', authenticateUser, isAdmin, deleteUser);
+router.delete('/:id', authenticateUser,  deleteUser);
 
 // Export
 export default router;
