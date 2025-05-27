@@ -14,6 +14,17 @@ export const getOrders = async (req, res) => {
 };
 
 
+// for admin only 
+export const getOrdersCount = async (req, res) => {
+  try {
+    const count = await Order.countDocuments({});
+    res.status(200).json({ count });
+  } catch (err) {
+    console.error('Failed to get orders count', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
 
 // controllers/paymentController.js
 

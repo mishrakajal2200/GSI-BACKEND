@@ -59,7 +59,7 @@ import {
 } from '../controllers/userController.js';
 
 import authenticateUser from '../middleware/authMiddleware.js';
-import isAdmin from '../middleware/adminMiddleware.js'; // Optional middleware to restrict to admins
+// import isAdmin from '../middleware/adminMiddleware.js'; // Optional middleware to restrict to admins
 
 const router = express.Router();
 
