@@ -1,5 +1,5 @@
 import express from 'express';
-import { loginUser, registerUser,searchProducts, getUserProfile ,updateUserProfile,updateCheckoutDetails} from '../controllers/userController.js';
+import { loginUser, registerUser,searchProducts, getUserProfile ,updateUserProfile,updateCheckoutDetails,getAllUsers} from '../controllers/userController.js';
 import authenticateUser from '../middleware/authMiddleware.js'; // ✅ CORRECT IMPORT - No curly braces
 
 const router = express.Router();
@@ -17,7 +17,7 @@ router.put('/ptofile', authenticateUser, updateUserProfile);
 
 router.get("/search", searchProducts);
 
-
+router.get('/', getAllUsers);
 // router.post('/api/contact', contactFormHandler);
 
 export default router;
