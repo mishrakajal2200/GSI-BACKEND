@@ -13,7 +13,6 @@ export const getOrders = async (req, res) => {
   }
 };
 
-
 // for admin only 
 export const getOrdersCount = async (req, res) => {
   try {
@@ -26,8 +25,18 @@ export const getOrdersCount = async (req, res) => {
 };
 
 
-// controllers/paymentController.js
+// 🆕 Get all orders for admin
+export const getAllOrders = async (req, res) => {
+  try {
+    const orders = await Order.find({}).sort({ createdAt: -1 });
+    res.status(200).json({ success: true, orders });
+  } catch (err) {
+    console.error("Failed to fetch all orders", err);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
 
+// controllers/paymentController.js
 export const placeCODOrder = async (req, res) => {
   try {
     const { items, shippingAddress, totalPrice, paymentMethod } = req.body;
@@ -98,63 +107,6 @@ export const placeCODOrder = async (req, res) => {
     return res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
-
-
-
-
-
-// const razorpay = new Razorpay({
-//   key_id: process.env.RAZORPAY_KEY_ID,
-//   key_secret: process.env.RAZORPAY_SECRET,
-// });
-
-// export const createRazorpayOrder = async (req, res) => {
-//   try {
-//     const { amount } = req.body; // Amount from the request
-
-//     const key_id = process.env.RAZORPAY_KEY_ID; // Your Razorpay Key ID from .env file
-//     const key_secret = process.env.RAZORPAY_KEY_SECRET; // Your Razorpay Key Secret from .env file
-
-//     // Log the key to make sure it's correctly retrieved from environment
-//     console.log("Razorpay Key ID:", key_id);
-    
-//     // Add Authorization header here
-//     const headers = {
-//       'Authorization': 'Basic ' + Buffer.from(`${key_id}:${key_secret}`).toString('base64')
-//     };
-
-//     // Razorpay instance
-//     const instance = new Razorpay({
-//       key_id: key_id,
-//       key_secret: key_secret
-//     });
-
-//     const orderOptions = {
-//       amount: amount, // Razorpay expects amount in paise (100 paise = 1 INR)
-//       currency: "INR",
-//       receipt: "receipt#1",
-//       payment_capture: 1, // 1 means automatic payment capture
-//     };
-
-//     instance.orders.create(orderOptions, (error, order) => {
-//       if (error) {
-//         console.error("Razorpay order creation error:", error);
-//         return res.status(500).json({ message: "Error creating order", error: error.message });
-//       }
-
-//       // Send order response back to frontend
-//       res.json({
-//         orderId: order.id,
-//         amount: order.amount,
-//         currency: order.currency,
-//       });
-//     });
-//   } catch (error) {
-//     console.error("Error in createRazorpayOrder:", error);
-//     res.status(500).json({ message: 'Server error', error: error.message });
-//   }
-// };
-
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
