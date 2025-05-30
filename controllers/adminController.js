@@ -29,7 +29,7 @@ export const adminLogin = async (req, res) => {
 
     res.status(200).json({
       message: 'Admin login successful',
-      token,
+      token:token || 'no_token',
       role: user.role,
       name: user.name,
       email: user.email,
