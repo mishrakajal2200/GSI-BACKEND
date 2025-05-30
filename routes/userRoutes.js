@@ -58,6 +58,8 @@ import {
   getUserById,
 } from '../controllers/userController.js';
 
+import { adminLogin,getAdminStats } from '../controllers/adminController.js';
+
 import authenticateUser from '../middleware/authMiddleware.js';
 // import isAdmin from '../middleware/adminMiddleware.js'; // Optional middleware to restrict to admins
 
@@ -96,6 +98,11 @@ router.patch('/:id/status', authenticateUser, blockUnblockUser);
 
 // Delete a user
 router.delete('/:id', authenticateUser,  deleteUser);
+
+router.post('/admin/login', adminLogin);
+
+router.get('/admin/stats', authenticateUser, isAdmin, getAdminStats);
+
 
 // Export
 export default router;

@@ -5,7 +5,7 @@ import {authenticateUser,isAdmin} from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-router.post('/login', adminLogin);
+router.post('/admin/login', adminLogin);
 
 router.get('/admin/stats', authenticateUser, isAdmin, getAdminStats);
 

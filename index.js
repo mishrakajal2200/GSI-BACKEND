@@ -88,7 +88,7 @@ app.use('/api/getproducts', productRoutes);
 app.use('/api/nearby',shopRoutes);
 app.use("/api/filters", filtersRoutes); 
 app.use("/api/payment",payment);
-app.use('/api/auth/admin', adminRoutes);
+app.use("/api/admin",adminRoutes)
 
 // Connect DB
 mongoose.connect(process.env.MONGO_URI, {
