@@ -88,7 +88,8 @@ app.use('/api/getproducts', productRoutes);
 app.use('/api/nearby',shopRoutes);
 app.use("/api/filters", filtersRoutes); 
 app.use("/api/payment",payment);
-app.use("/api/admin",adminRoutes)
+app.use('/api/admin', adminRoutes);
+
 
 // Connect DB
 mongoose.connect(process.env.MONGO_URI, {
@@ -101,7 +102,13 @@ mongoose.connect(process.env.MONGO_URI, {
 // Function to create admin user
 const createAdmin = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI); // Your MongoDB URI
+    await mongoose.connect(process.env.MONGO_URI); // make sure your .env has MONGO_URL
+
+    const existing = await User.findOne({ email: "admin@example.com" });
+    if (existing) {
+      console.log("Admin already exists");
+      return process.exit(0);
+    }
 
     const hashedPassword = await bcrypt.hash("admin123", 10);
 
@@ -114,9 +121,9 @@ const createAdmin = async () => {
 
     await admin.save();
     console.log("✅ Admin created successfully");
-    process.exit();
-  } catch (err) {
-    console.error("❌ Error creating admin:", err.message);
+    process.exit(0);
+  } catch (error) {
+    console.error("❌ Error creating admin:", error);
     process.exit(1);
   }
 };
