@@ -14,9 +14,9 @@ router.post("/place-order",authenticateUser, placeCODOrder);
 
 router.get("/get-orders",authenticateUser,getOrders);
 
-router.get('/all-orders', authenticateUser,isAdmin, getAllOrders);
+router.get('/all-orders', authenticateUser, getAllOrders);
 
 // new count route (admin only)
-router.get('/count', authenticateUser,isAdmin, getOrdersCount);
+router.get('/count', authenticateUser, getOrdersCount);
 
 export default router;
