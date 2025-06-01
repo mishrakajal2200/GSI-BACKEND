@@ -14,12 +14,12 @@
 // export default router;
 
 
-// import express from "express";
-// import { adminLogin, getAdminStats} from "../controllers/adminController.js";
-// import { isAdmin } from "../middleware/authMiddleware.js";
-// const router = express.Router();
+import express from "express";
+import { adminLogin, getAdminStats} from "../controllers/adminController.js";
+import { isAdmin } from "../middleware/authMiddleware.js";
+const router = express.Router();
 
-// router.post("/login",isAdmin, adminLogin);
-// router.get('/stats', authenticateUser, isAdmin, getAdminStats);
+router.post("/admin/login",isAdmin, adminLogin);
+router.get('/admin/stats', isAdmin, getAdminStats);
 
-// export default router;
+export default router;
