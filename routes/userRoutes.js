@@ -85,19 +85,19 @@ router.get("/search", searchProducts);
 router.get('/', authenticateUser,isAdmin, getAllUsers);
 
 // Get single user by ID
-router.get('/:id', authenticateUser,  getUserById);
+router.get('/:id', authenticateUser,isAdmin,  getUserById);
 
 // Update user details
-router.put('/:id', authenticateUser, updateUserDetails);
+router.put('/:id', authenticateUser,isAdmin, updateUserDetails);
 
 // Change user role
-router.patch('/:id/role', authenticateUser,  updateUserRole);
+router.patch('/:id/role', authenticateUser,isAdmin,  updateUserRole);
 
 // Block or Unblock user
-router.patch('/:id/status', authenticateUser, blockUnblockUser);
+router.patch('/:id/status', authenticateUser,isAdmin, blockUnblockUser);
 
 // Delete a user
-router.delete('/:id', authenticateUser,  deleteUser);
+router.delete('/:id', authenticateUser,isAdmin,  deleteUser);
 
 // router.post('/login',isAdmin, adminLogin);
 

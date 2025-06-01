@@ -19,7 +19,7 @@ import { adminLogin, getAdminStats} from "../controllers/adminController.js";
 import { isAdmin } from "../middleware/authMiddleware.js";
 const router = express.Router();
 
-router.post("/admin/login",isAdmin, adminLogin);
-router.get('/admin/stats', isAdmin, getAdminStats);
+router.post("/login", adminLogin);
+router.get("/stats", isAdmin, getAdminStats);
 
 export default router;
