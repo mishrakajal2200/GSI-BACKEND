@@ -190,6 +190,12 @@ const corsOptions = {
 // ✅ CORS middleware must be before everything else
 app.use(cors(corsOptions));
 
+// ✅ Request logger
+app.use((req, res, next) => {
+  console.log(`➡️ ${req.method} ${req.url} from ${req.headers.origin}`);
+  next();
+});
+
 // ✅ Body parsers and JSON
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -231,7 +237,7 @@ app.post('/api/contact', (req, res) => {
   });
 });
 
-// ✅ Routes
+// ✅ API Routes
 app.use('/api/auth', userRoutes);
 app.use('/api/auth/profilepage', userRoutes);
 app.use('/api/subs', subscribeRoutes);
@@ -242,14 +248,6 @@ app.use('/api/nearby', shopRoutes);
 app.use('/api/filters', filtersRoutes);
 app.use('/api/payment', payment);
 app.use('/api/admin', adminRoutes);
-
-// ✅ MongoDB connection
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-}).then(() => {
-  console.log('✅ MongoDB connected');
-}).catch(err => console.error('❌ MongoDB connection error:', err));
 
 // ✅ Create Admin User
 const createAdmin = async () => {
@@ -276,7 +274,14 @@ const createAdmin = async () => {
   }
 };
 
-createAdmin();
+// ✅ MongoDB connection
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+}).then(() => {
+  console.log('✅ MongoDB connected');
+  createAdmin(); // 🔄 Run only after DB is connected
+}).catch(err => console.error('❌ MongoDB connection error:', err));
 
 // ✅ Start server
 const PORT = process.env.PORT || 5000;
