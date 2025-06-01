@@ -249,32 +249,32 @@ mongoose.connect(process.env.MONGO_URI, {
   console.log('✅ MongoDB connected');
 }).catch(err => console.error('❌ MongoDB connection error:', err));
 
-// ✅ Create Admin User on Server Start
-const createAdmin = async () => {
-  try {
-    const existing = await User.findOne({ email: "admin@example.com" });
-    if (existing) {
-      console.log("🟢 Admin already exists");
-      return;
-    }
+// // ✅ Create Admin User on Server Start
+// const createAdmin = async () => {
+//   try {
+//     const existing = await User.findOne({ email: "admin@example.com" });
+//     if (existing) {
+//       console.log("🟢 Admin already exists");
+//       return;
+//     }
 
-    const hashedPassword = await bcrypt.hash("admin123", 10);
+//     const hashedPassword = await bcrypt.hash("admin123", 10);
 
-    const admin = new User({
-      name: "Admin",
-      email: "admin@example.com",
-      password: hashedPassword,
-      role: "admin",
-    });
+//     const admin = new User({
+//       name: "Admin",
+//       email: "admin@example.com",
+//       password: hashedPassword,
+//       role: "admin",
+//     });
 
-    await admin.save();
-    console.log("✅ Admin created successfully");
-  } catch (error) {
-    console.error("❌ Error creating admin:", error);
-  }
-};
+//     await admin.save();
+//     console.log("✅ Admin created successfully");
+//   } catch (error) {
+//     console.error("❌ Error creating admin:", error);
+//   }
+// };
 
-createAdmin();
+// createAdmin();
 
 // ✅ Start Server
 const PORT = process.env.PORT || 5000;
