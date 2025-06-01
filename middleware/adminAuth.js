@@ -39,15 +39,15 @@
 // };
 
 
-import express from 'express';
-import { adminLogin, getAdminStats } from '../controllers/adminController.js';
-import { adminAuth, isAdmin } from '../middleware/authMiddleware.js';
+// import express from 'express';
+// import { adminLogin, getAdminStats } from '../controllers/adminController.js';
+// import { adminAuth, isAdmin } from '../middleware/authMiddleware.js';
 
-const router = express.Router();
+// const router = express.Router();
 
-router.post('/login', adminLogin);
+// router.post('/login', adminLogin);
 
-// Protect route: only logged-in admins can access
-router.get('/admin/stats', adminAuth, isAdmin, getAdminStats);
+// // Protect route: only logged-in admins can access
+// router.get('/admin/stats', adminAuth, isAdmin, getAdminStats);
 
-export default router;
+// export default router;

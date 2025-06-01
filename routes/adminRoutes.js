@@ -5,7 +5,7 @@
 
 // const router = express.Router();
 
-// router.post('/admin/login', adminLogin);
+// router.post('/admin/login',isAdmin, adminLogin);
 
 // router.get('/admin/stats', authenticateUser, isAdmin, getAdminStats);
 

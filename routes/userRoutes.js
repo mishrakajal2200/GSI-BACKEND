@@ -60,7 +60,7 @@ import {
 
 import { adminLogin,getAdminStats } from '../controllers/adminController.js';
 
-import authenticateUser from '../middleware/authMiddleware.js';
+import authenticateUser, { isAdmin } from '../middleware/authMiddleware.js';
 // import isAdmin from '../middleware/adminMiddleware.js'; // Optional middleware to restrict to admins
 
 const router = express.Router();
@@ -82,7 +82,7 @@ router.get("/search", searchProducts);
 // 👇 Admin User Management Routes
 
 // Get all users (Admin only)
-router.get('/', authenticateUser, getAllUsers);
+router.get('/', authenticateUser,isAdmin, getAllUsers);
 
 // Get single user by ID
 router.get('/:id', authenticateUser,  getUserById);
@@ -99,9 +99,9 @@ router.patch('/:id/status', authenticateUser, blockUnblockUser);
 // Delete a user
 router.delete('/:id', authenticateUser,  deleteUser);
 
-router.post('/admin/login', adminLogin);
+router.post('/admin/login',isAdmin, adminLogin);
 
-router.get('/admin/stats', authenticateUser, getAdminStats);
+router.get('/admin/stats', authenticateUser,isAdmin, getAdminStats);
 
 
 // Export
