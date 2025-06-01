@@ -140,7 +140,6 @@
 
 
 
-
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
@@ -164,18 +163,18 @@ dotenv.config();
 
 const app = express();
 
-// ✅ Allowed origins (make sure frontend matches exactly)
+// ✅ Allowed origins
 const allowedOrigins = [
   'https://gsienterprises.com',
   'https://www.gsienterprises.com',
   'https://preeminent-begonia-54c21c.netlify.app',
-  'http://localhost:3000', // local dev
+  'http://localhost:3000',
 ];
 
-// ✅ CORS options with debug log
+// ✅ CORS options
 const corsOptions = {
   origin: function (origin, callback) {
-    console.log("🟡 CORS Origin:", origin); // for debugging
+    console.log("🟡 CORS Origin:", origin);
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -188,7 +187,10 @@ const corsOptions = {
   credentials: true,
 };
 
+// ✅ CORS middleware must be before everything else
 app.use(cors(corsOptions));
+
+// ✅ Body parsers and JSON
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
@@ -196,7 +198,7 @@ app.use(express.json());
 // ✅ Serve static images
 app.use('/images', express.static('src/images'));
 
-// ✅ Nodemailer transporter setup
+// ✅ Nodemailer setup
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
@@ -229,7 +231,7 @@ app.post('/api/contact', (req, res) => {
   });
 });
 
-// ✅ API Routes
+// ✅ Routes
 app.use('/api/auth', userRoutes);
 app.use('/api/auth/profilepage', userRoutes);
 app.use('/api/subs', subscribeRoutes);
@@ -241,7 +243,7 @@ app.use('/api/filters', filtersRoutes);
 app.use('/api/payment', payment);
 app.use('/api/admin', adminRoutes);
 
-// ✅ MongoDB Connection
+// ✅ MongoDB connection
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -249,7 +251,7 @@ mongoose.connect(process.env.MONGO_URI, {
   console.log('✅ MongoDB connected');
 }).catch(err => console.error('❌ MongoDB connection error:', err));
 
-// // ✅ Create Admin User on Server Start
+// ✅ Create Admin User
 const createAdmin = async () => {
   try {
     const existing = await User.findOne({ email: "admin@example.com" });
@@ -276,7 +278,7 @@ const createAdmin = async () => {
 
 createAdmin();
 
-// ✅ Start Server
+// ✅ Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
