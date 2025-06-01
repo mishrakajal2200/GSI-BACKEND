@@ -99,9 +99,9 @@ router.patch('/:id/status', authenticateUser, blockUnblockUser);
 // Delete a user
 router.delete('/:id', authenticateUser,  deleteUser);
 
-// router.post('/admin/login',isAdmin, adminLogin);
+// router.post('/login',isAdmin, adminLogin);
 
-// router.get('/admin/stats', authenticateUser,isAdmin, getAdminStats);
+// router.get('/stats', authenticateUser,isAdmin, getAdminStats);
 
 
 // Export
