@@ -239,7 +239,7 @@ app.use('/api/getproducts', productRoutes);
 app.use('/api/nearby', shopRoutes);
 app.use('/api/filters', filtersRoutes);
 app.use('/api/payment', payment);
-app.use('/api/auth/admin', adminRoutes);
+app.use('/api/admin', adminRoutes);
 
 // ✅ MongoDB Connection
 mongoose.connect(process.env.MONGO_URI, {
