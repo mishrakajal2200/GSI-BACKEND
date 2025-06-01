@@ -25,38 +25,24 @@ const allowedOrigins = [
   'https://gsienterprises.com', 'https://www.gsienterprises.com','https://preeminent-begonia-54c21c.netlify.app',
 ];
 
-// const corsOptions = {
-//   origin: function (origin, callback) {
-//     if (!origin || allowedOrigins.includes(origin)) {
-//       callback(null, true);
-//     } else {
-//       callback(new Error('Not allowed by CORS'));
-//     }
-//   },
-//   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-//   allowedHeaders: ['Content-Type', 'Authorization'],
-//   credentials: true, // <- Add this if you're using cookies/auth
-// };
-
 const corsOptions = {
   origin: function (origin, callback) {
-    // allow requests with no origin (like mobile apps or curl)
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
     }
   },
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true,
+  credentials: true, // <- Add this if you're using cookies/auth
 };
+
 
 
 // Use CORS middleware with the defined options
 app.use(cors(corsOptions));
 
-app.options(/.*/, cors(corsOptions));
 
 
 
