@@ -1,7 +1,7 @@
 
 import express from "express";
 import { placeCODOrder,getOrders,createRazorpayOrder,getOrdersCount,getAllOrders  } from "../controllers/paymentController.js";
-import authenticateUser from "../middleware/authMiddleware.js";
+import authenticateUser, { isAdmin } from "../middleware/authMiddleware.js";
 
 
 const router = express.Router();
@@ -14,16 +14,11 @@ router.post("/place-order",authenticateUser, placeCODOrder);
 
 router.get("/get-orders",authenticateUser,getOrders);
 
-const adminOnly = (req, res, next) => {
-  if (!req.user || !req.user.isAdmin) {
-    return res.status(403).json({ message: 'Admin access only' });
-  }
-  next();
-};
 
-router.get('/all-orders', authenticateUser,adminOnly, getAllOrders);
+
+router.get('/all-orders', authenticateUser,isAdmin, getAllOrders);
 
 // new count route (admin only)
-router.get('/count', authenticateUser,adminOnly, getOrdersCount);
+router.get('/count', authenticateUser,isAdmin, getOrdersCount);
 
 export default router;

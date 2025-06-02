@@ -97,7 +97,7 @@ export const getProductById = async (req, res) => {
 };
 
 // @desc    Update product by ID
-// @route   PUT /api/products/:id
+
 export const updateProduct = async (req, res) => {
   try {
     const updatedProduct = await Product.findByIdAndUpdate(
@@ -114,7 +114,7 @@ export const updateProduct = async (req, res) => {
 };
 
 // @desc    Delete product by ID
-// @route   DELETE /api/products/:id
+
 export const deleteProduct = async (req, res) => {
   try {
     const deletedProduct = await Product.findByIdAndDelete(req.params.id);

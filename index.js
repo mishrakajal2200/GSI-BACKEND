@@ -311,7 +311,6 @@ import dotenv from 'dotenv';
 import nodemailer from 'nodemailer';
 import bodyParser from 'body-parser';
 import bcrypt from 'bcryptjs';
-
 import User from './models/User.js';
 import productRoutes from './routes/productRoutes.js';
 import userRoutes from './routes/userRoutes.js';
@@ -404,7 +403,6 @@ app.post('/api/contact', (req, res) => {
 
 // ✅ API Routes
 app.use('/api/auth', userRoutes);
-app.use('/api/auth/profilepage', userRoutes);
 app.use('/api/subs', subscribeRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/wishlist', wishlistRoutes);
@@ -435,7 +433,7 @@ const createAdmin = async () => {
     await admin.save();
     console.log("✅ Admin created successfully");
   } catch (error) {
-    console.error("❌ Error creating admin:", error);
+    console.error("❌ Error creating admin", error);
   }
 };
 
@@ -446,7 +444,7 @@ mongoose.connect(process.env.MONGO_URI, {
 }).then(() => {
   console.log('✅ MongoDB connected');
   createAdmin(); // 🔄 Run only after DB is connected
-}).catch(err => console.error('❌ MongoDB connection error:', err));
+}).catch(err => console.error('❌ MongoDB connection error', err));
 
 // ✅ Start server
 const PORT = process.env.PORT || 5000;

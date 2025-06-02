@@ -94,7 +94,7 @@ export const getAdminStats = async (req, res) => {
       totalRevenue: totalRevenue[0]?.total || 0,
     });
   } catch (error) {
-    console.error('Failed to fetch admin stats:', error);
+    console.error('Failed to fetch admin stats', error);
     res.status(500).json({ message: 'Server error' });
   }
 };
