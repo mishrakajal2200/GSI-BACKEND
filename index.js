@@ -28,6 +28,7 @@ const allowedOrigins = [
   'https://www.gsienterprises.com',
   'https://preeminent-begonia-54c21c.netlify.app',
   'http://localhost:3000',
+  'http://localhost:3001'
 ];
 
 // ✅ CORS options
