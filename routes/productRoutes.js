@@ -22,12 +22,12 @@ router.get('/products', getAllProducts);
 router.get("/search",searchProducts);
 
 // Get single product by ID
-router.get('/:id', getProductById);
+router.get('/product/:id', getProductById);
 
 // Update product
-router.put('/:id', updateProduct);
+router.put('/product/:id', updateProduct);
 
 // Delete product
-router.delete('/:id', deleteProduct);
+router.delete('/product/:id', deleteProduct);
 
 export default router;

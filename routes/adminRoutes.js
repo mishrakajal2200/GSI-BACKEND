@@ -16,7 +16,7 @@
 
 import express from "express";
 import { adminLogin, getAdminStats} from "../controllers/adminController.js";
-import { isAdmin } from "../middleware/authMiddleware.js";
+import authenticateUser, { isAdmin } from "../middleware/authMiddleware.js";
 const router = express.Router();
 
 router.post("/login", adminLogin);

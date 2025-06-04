@@ -1,46 +1,3 @@
-// import express from 'express';
-// import { loginUser, registerUser,searchProducts, getUserProfile ,updateUserProfile,updateCheckoutDetails,getAllUsers} from '../controllers/userController.js';
-// import authenticateUser from '../middleware/authMiddleware.js'; // ✅ CORRECT IMPORT - No curly braces
-
-// const router = express.Router();
-
-// // 🛠 Routes
-// router.post('/signup', registerUser);
-// router.post('/login', loginUser);
-
-// router.put('/checkout', authenticateUser, updateCheckoutDetails);
-// // GET /api/users/profile - Fetch logged-in user data
-// router.get('/profile', authenticateUser, getUserProfile);
-
-// // PUT /api/users/profile - Update profile
-// router.put('/ptofile', authenticateUser, updateUserProfile);
-
-// router.get("/search", searchProducts);
-
-// // Get all users (Admin only)
-// router.get('/', authenticateUser, isAdmin, getAllUsers);
-
-// // Get single user by ID
-// router.get('/:id', authenticateUser, isAdmin, getUserById);
-
-// // Update user details
-// router.put('/:id', authenticateUser, isAdmin, updateUserDetails);
-
-// // Change user role
-// router.patch('/:id/role', authenticateUser, isAdmin, updateUserRole);
-
-// // Block or Unblock user
-// router.patch('/:id/status', authenticateUser, isAdmin, blockUnblockUser);
-
-// // Delete a user
-// router.delete('/:id', authenticateUser, isAdmin, deleteUser);
-
-// // router.post('/api/contact', contactFormHandler);
-
-// export default router;
-
-
-
 
 import express from 'express';
 import {
@@ -58,10 +15,9 @@ import {
   getUserById,
 } from '../controllers/userController.js';
 
-// import { adminLogin,getAdminStats } from '../controllers/adminController.js';
+
 
 import authenticateUser, { isAdmin } from '../middleware/authMiddleware.js';
-// import isAdmin from '../middleware/adminMiddleware.js'; // Optional middleware to restrict to admins
 
 const router = express.Router();
 
@@ -69,15 +25,18 @@ const router = express.Router();
 router.post('/signup', registerUser);
 router.post('/login', loginUser);
 
+
+// Search
+router.get("/search", searchProducts);
+
 // User profile routes
 router.get('/profile', authenticateUser, getUserProfile);
-router.put('/ptofile', authenticateUser, updateUserProfile);
+router.put('/profile', authenticateUser, updateUserProfile);
 
 // Checkout route
 router.put('/checkout', authenticateUser, updateCheckoutDetails);
 
-// Search
-router.get("/search", searchProducts);
+
 
 // 👇 Admin User Management Routes
 
@@ -85,23 +44,20 @@ router.get("/search", searchProducts);
 router.get('/', authenticateUser,isAdmin, getAllUsers);
 
 // Get single user by ID
-router.get('/:id', authenticateUser,isAdmin,  getUserById);
+router.get('/user/:id', authenticateUser,isAdmin,  getUserById);
 
 // Update user details
-router.put('/:id', authenticateUser,isAdmin, updateUserDetails);
+router.put('/user/:id', authenticateUser,isAdmin, updateUserDetails);
 
 // Change user role
-router.patch('/:id/role', authenticateUser,isAdmin,  updateUserRole);
+router.patch('/user/:id/role', authenticateUser,isAdmin,  updateUserRole);
 
 // Block or Unblock user
-router.patch('/:id/status', authenticateUser,isAdmin, blockUnblockUser);
+router.patch('/user/:id/status', authenticateUser,isAdmin, blockUnblockUser);
 
 // Delete a user
-router.delete('/:id', authenticateUser,isAdmin,  deleteUser);
+router.delete('/user/:id', authenticateUser,isAdmin,  deleteUser);
 
-// router.post('/login',isAdmin, adminLogin);
-
-// router.get('/stats', authenticateUser,isAdmin, getAdminStats);
 
 
 // Export

@@ -41,6 +41,9 @@ import jwt from 'jsonwebtoken';
 // };
 
 export const adminLogin = async (req, res) => {
+
+  console.log("🔥 adminLogin controller HIT");
+  
   const { email, password } = req.body;
 
   try {
