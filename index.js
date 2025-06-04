@@ -106,7 +106,7 @@ app.use('/api/getproducts', productRoutes);
 app.use('/api/nearby', shopRoutes);
 app.use('/api/filters', filtersRoutes);
 app.use('/api/payment', payment);
-app.use('/api/admin', adminRoutes);
+app.use('/api/auth/admin', adminRoutes);
 
 // ✅ Create Admin User
 const createAdmin = async () => {
