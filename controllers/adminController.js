@@ -40,21 +40,66 @@ import jwt from 'jsonwebtoken';
 //   }
 // };
 
-export const adminLogin = async (req, res) => {
+// export const adminLogin = async (req, res) => {
 
+//   console.log("🔥 adminLogin controller HIT");
+
+//   const { email, password } = req.body;
+
+//   try {
+//     const user = await User.findOne({ email });
+
+//     if (!user) {
+//       return res.status(401).json({ message: 'Invalid credentials' });
+//     }
+
+//     const isMatch = await user.matchPassword(password);
+//     if (!isMatch) {
+//       return res.status(401).json({ message: 'Invalid credentials' });
+//     }
+
+//     const token = jwt.sign(
+//       { id: user._id, role: user.role },
+//       process.env.JWT_SECRET,
+//       { expiresIn: '7d' }
+//     );
+
+//     res.status(200).json({
+//       message: 'Login successful',
+//       user: {
+//         _id: user._id,
+//         name: user.name,
+//         email: user.email,
+//         role: user.role
+//       },
+//       token,
+//     });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// };
+export const adminLogin = async (req, res) => {
   console.log("🔥 adminLogin controller HIT");
-  
+
   const { email, password } = req.body;
 
   try {
     const user = await User.findOne({ email });
 
     if (!user) {
+      console.log("❌ No user found");
       return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+    if (user.role !== "admin") {
+      console.log("❌ Not an admin");
+      return res.status(401).json({ message: "Access Denied: Not an admin" });
     }
 
     const isMatch = await user.matchPassword(password);
     if (!isMatch) {
+      console.log("❌ Password does not match");
       return res.status(401).json({ message: 'Invalid credentials' });
     }
 
@@ -70,12 +115,12 @@ export const adminLogin = async (req, res) => {
         _id: user._id,
         name: user.name,
         email: user.email,
-        role: user.role
+        role: user.role,
       },
       token,
     });
   } catch (error) {
-    console.error(error);
+    console.error("🔥 Server Error:", error);
     res.status(500).json({ message: 'Server error' });
   }
 };
