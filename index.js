@@ -28,7 +28,7 @@ const allowedOrigins = [
   'https://www.gsienterprises.com',
   'https://preeminent-begonia-54c21c.netlify.app',
   'http://localhost:3000',
-  'http://localhost:3001'
+  
 ];
 
 // ✅ CORS options
@@ -49,7 +49,7 @@ const corsOptions = {
 
 // ✅ CORS middleware must be before routes
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // ✅ Handle preflight OPTIONS requests automatically
+// app.options('*', cors(corsOptions)); // ✅ Handle preflight OPTIONS requests automatically
 
 // ✅ Request logger
 app.use((req, res, next) => {
