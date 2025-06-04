@@ -10,7 +10,7 @@ import {
   applyCoupon,
 } from '../controllers/cartController.js';
 
-import  authenticateUser from '../middleware/authMiddleware.js';
+import  {authenticateUser} from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 

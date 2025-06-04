@@ -16,10 +16,10 @@
 
 import express from "express";
 import { adminLogin, getAdminStats} from "../controllers/adminController.js";
-import authenticateUser, { isAdmin } from "../middleware/authMiddleware.js";
+import  { isAdmin } from "../middleware/authMiddleware.js";
 const router = express.Router();
 
-router.post("/login", adminLogin);
+router.post("/adminlogin/login", adminLogin);
 router.get("/stats", isAdmin, getAdminStats);
 
 export default router;
