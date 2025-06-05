@@ -112,27 +112,32 @@ app.use('/api/admin', adminRoutes);
 // ✅ Create Admin User
 const createAdmin = async () => {
   try {
-    const existing = await User.findOne({ email: "admin@example.com" });
+    const existing = await User.findOne({ email: "gsienterprises@gautam.com" });
     if (existing) {
       console.log("🟢 Admin already exists");
       return;
     }
 
-    const hashedPassword = await bcrypt.hash("admin123", 10);
+    const hashedPassword = await bcrypt.hash("admin123", 10); // Or any secure password
 
     const admin = new User({
-      name: "Admin",
-      email: "admin@example.com",
+      name: "GSI Admin",
+      email: "gsienterprises@gautam.com",
       password: hashedPassword,
       role: "admin",
     });
 
     await admin.save();
-    console.log("✅ Admin created successfully");
+    console.log("✅ GSI Admin created successfully");
   } catch (error) {
     console.error("❌ Error creating admin", error);
   }
 };
+
+
+// Call it in server.js
+createAdmin();
+
 
 // ✅ MongoDB connection
 mongoose.connect(process.env.MONGO_URI, {
