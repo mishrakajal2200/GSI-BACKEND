@@ -118,12 +118,10 @@ const createAdmin = async () => {
       return;
     }
 
-   
-
     const admin = new User({
       name: "GSI Admin",
       email: "gsienterprises@gautam.com",
-      password: gautamgsienterses7788,
+      password: "gautamgsienterses7788", // ✅ This will be auto-hashed by your model
       role: "admin",
     });
 
@@ -133,6 +131,7 @@ const createAdmin = async () => {
     console.error("❌ Error creating admin", error);
   }
 };
+
 
 
 // Call it in server.js
