@@ -131,7 +131,10 @@ const createAdmin = async () => {
     console.error("❌ Error creating admin", error);
   }
 };
- createAdmin();
+
+// Call it in server.js
+createAdmin();
+
 
 // ✅ MongoDB connection
 mongoose.connect(process.env.MONGO_URI, {
@@ -139,6 +142,7 @@ mongoose.connect(process.env.MONGO_URI, {
   useUnifiedTopology: true,
 }).then(() => {
   console.log('✅ MongoDB connected');
+  createAdmin(); // 🔄 Run only after DB is connected
 }).catch(err => console.error('❌ MongoDB connection error', err));
 
 // ✅ Start server
