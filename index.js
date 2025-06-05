@@ -118,7 +118,7 @@ const createAdmin = async () => {
       return;
     }
 
-    const hashedPassword = await bcrypt.hash("admin123", 10); // Or any secure password
+    const hashedPassword = await bcrypt.hash("gautamgsienterses7788", 10); // Or any secure password
 
     const admin = new User({
       name: "GSI Admin",
