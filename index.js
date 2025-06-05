@@ -118,12 +118,12 @@ const createAdmin = async () => {
       return;
     }
 
-    const hashedPassword = await bcrypt.hash("gautamgsienterses7788", 10); // Or any secure password
+   
 
     const admin = new User({
       name: "GSI Admin",
       email: "gsienterprises@gautam.com",
-      password: hashedPassword,
+      password: gautamgsienterses7788,
       role: "admin",
     });
 
