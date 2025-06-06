@@ -151,7 +151,7 @@ export const adminLogin = async (req, res) => {
 // };
 export const getAdminStats = async (req, res) => {
   try {
-    const totalUsers = await User.countDocuments();
+
     const activeUsers = await User.countDocuments({ isActive: true });
     const totalOrders = await Order.countDocuments();
 
