@@ -20,6 +20,6 @@ import  { authenticateUser,isAdmin } from "../middleware/authMiddleware.js";
 const router = express.Router();
 
 router.post("/adminlogin/login", adminLogin);
-router.get("/statement/stats",authenticateUser, isAdmin, getAdminStats);
+router.get("/stats",authenticateUser, isAdmin, getAdminStats);
 
 export default router;
