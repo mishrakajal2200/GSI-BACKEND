@@ -128,11 +128,13 @@ export const adminLogin = async (req, res) => {
 export const getAdminStats = async (req, res) => {
   try {
     const totalUsers = await User.countDocuments();
-    const activeUsers = await User.countDocuments({ isActive: true }); // Add logic as per your schema
+    const activeUsers = await User.countDocuments({ isActive: true });
+
     const totalOrders = await Order.countDocuments();
+
     const totalRevenue = await Order.aggregate([
       { $match: { isPaid: true } },
-      { $group: { _id: null, total: { $sum: "$totalPrice" } } }
+      { $group: { _id: null, total: { $sum: "$totalPrice" } } },
     ]);
 
     res.status(200).json({
@@ -142,7 +144,7 @@ export const getAdminStats = async (req, res) => {
       totalRevenue: totalRevenue[0]?.total || 0,
     });
   } catch (error) {
-    console.error('Failed to fetch admin stats', error);
-    res.status(500).json({ message: 'Server error' });
+    console.error('❌ Failed to fetch admin stats:', error.message);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
