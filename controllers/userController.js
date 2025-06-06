@@ -216,16 +216,22 @@ export const blockUnblockUser = asyncHandler(async (req, res) => {
 
 // ✅ DELETE user
 export const deleteUser = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.params.id);
+  try {
+    const user = await User.findById(req.params.id);
 
-  if (user) {
-    await user.remove();
-    res.json({ message: 'User deleted successfully' });
-  } else {
-    res.status(404);
-    throw new Error('User not found');
+    if (user) {
+      await user.deleteOne(); // or await user.remove(); if you're using older Mongoose
+      res.json({ message: 'User deleted successfully' });
+    } else {
+      res.status(404);
+      throw new Error('User not found');
+    }
+  } catch (error) {
+    console.error('DELETE USER ERROR:', error); // ✅ Add this
+    res.status(500).json({ message: 'Server error while deleting user' });
   }
 });
+
 
 
 
