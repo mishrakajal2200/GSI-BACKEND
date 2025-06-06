@@ -214,7 +214,6 @@ export const blockUnblockUser = asyncHandler(async (req, res) => {
   }
 });
 
-
 // ✅ DELETE user
 export const deleteUser = asyncHandler(async (req, res) => {
   try {
