@@ -201,7 +201,7 @@ export const updateUserRole = asyncHandler(async (req, res) => {
 
 // ✅ BLOCK / UNBLOCK user
 export const blockUnblockUser = asyncHandler(async (req, res) => {
-  const { isBlocked } = req.body; // true to block, false to unblock
+  const { isBlocked } = req.body;
   const user = await User.findById(req.params.id);
 
   if (user) {
@@ -213,6 +213,7 @@ export const blockUnblockUser = asyncHandler(async (req, res) => {
     throw new Error('User not found');
   }
 });
+
 
 // ✅ DELETE user
 export const deleteUser = asyncHandler(async (req, res) => {
