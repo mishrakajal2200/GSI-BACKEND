@@ -161,10 +161,9 @@ export const getAdminStats = async (req, res) => {
     ]);
 
     res.status(200).json({
-      totalUsers,
       activeUsers,
       totalOrders,
-      totalSales: totalOrders, // ✅ Add this line
+      totalSales: totalOrders,
       totalRevenue: totalRevenue[0]?.total || 0,
     });
   } catch (error) {
