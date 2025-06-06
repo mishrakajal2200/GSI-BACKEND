@@ -44,19 +44,19 @@ router.put('/checkout', authenticateUser, updateCheckoutDetails);
 router.get('/', authenticateUser,isAdmin, getAllUsers);
 
 // Get single user by ID
-router.get('/:id', authenticateUser,isAdmin,  getUserById);
+router.get('/user/:id', authenticateUser,isAdmin,  getUserById);
 
 // Update user details
-router.put('/:id', authenticateUser,isAdmin, updateUserDetails);
+router.put('/user/:id', authenticateUser,isAdmin, updateUserDetails);
 
 // Change user role
-router.patch('/:id/role', authenticateUser,isAdmin,  updateUserRole);
+router.patch('/user/:id/role', authenticateUser,isAdmin,  updateUserRole);
 
 // Block or Unblock user
-router.patch('/:id/status', authenticateUser,isAdmin, blockUnblockUser);
+router.patch('/user/:id/status', authenticateUser,isAdmin, blockUnblockUser);
 
 // Delete a user
-router.delete('/:id', authenticateUser,isAdmin,  deleteUser);
+router.delete('/user/:id', authenticateUser,isAdmin,  deleteUser);
 
 
 
