@@ -203,3 +203,27 @@ export const getRecentOrders = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+
+// ✅ Update Order Status
+export const updateOrderStatus = async (req, res) => {
+  try {
+    const orderId = req.params.id;
+    const { status } = req.body;
+
+    const validStatuses = ["Pending", "Processing", "Shipped", "Completed"];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ message: "Invalid status value" });
+    }
+
+    const order = await Order.findById(orderId);
+    if (!order) return res.status(404).json({ message: "Order not found" });
+
+    order.status = status;
+    await order.save();
+
+    res.status(200).json({ message: "Order status updated", order });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
