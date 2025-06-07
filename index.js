@@ -16,7 +16,8 @@ import wishlistRoutes from './routes/wishlistRoutes.js';
 import shopRoutes from './routes/shopRoutes.js';
 import filtersRoutes from './routes/filtersRoutes.js';
 import payment from './routes/payment.js';
-import adminRoutes from './routes/adminRoutes.js';
+import adminRoutes from './routes/adminRoutes.js'; 
+
 
 dotenv.config();
 
@@ -108,6 +109,8 @@ app.use('/api/nearby', shopRoutes);
 app.use('/api/filters', filtersRoutes);
 app.use('/api/payment', payment);
 app.use('/api/admin', adminRoutes);
+
+
 
 // ✅ Create Admin User
 const createAdmin = async () => {
