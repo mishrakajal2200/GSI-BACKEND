@@ -17,11 +17,18 @@ import shopRoutes from './routes/shopRoutes.js';
 import filtersRoutes from './routes/filtersRoutes.js';
 import payment from './routes/payment.js';
 import adminRoutes from './routes/adminRoutes.js'; 
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
+
+app.use('/image', express.static(path.join(__dirname, 'image')));
 
 dotenv.config();
 
 const app = express();
+
+app.use('/image', express.static(path.join(__dirname, 'image')));
 
 // ✅ Allowed origins
 const allowedOrigins = [
