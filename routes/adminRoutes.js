@@ -9,6 +9,6 @@ const router = express.Router();
 router.post("/adminlogin/login", adminLogin);
 router.get("/stats",authenticateUser, isAdmin, getAdminStats);
 router.get("/orders/recent", authenticateUser, isAdmin, getRecentOrders);
-router.patch("/orders/:id/status", updateOrderStatus);
+router.patch("/orders/:id/status", authenticateUser, isAdmin, updateOrderStatus);
 
 export default router;
