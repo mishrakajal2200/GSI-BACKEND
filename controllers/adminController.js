@@ -228,7 +228,7 @@ export const updateOrderStatus = async (req, res) => {
   }
 };
 
-export const createProduct = async (req, res) => {
+const createProduct = async (req, res) => {
   try {
     const {
       name,
@@ -241,9 +241,13 @@ export const createProduct = async (req, res) => {
       description,
     } = req.body;
 
-    const image = req.file ? `image/${req.file.filename}` : '';
+    const image = req.file?.path;
 
-    const product = new Product({
+    if (!name || !price || !mrp || !brand || !image) {
+      return res.status(400).json({ message: 'All required fields must be filled' });
+    }
+
+    const newProduct = new Product({
       name,
       brand,
       mainCategory,
@@ -255,10 +259,13 @@ export const createProduct = async (req, res) => {
       image,
     });
 
-    await product.save();
+    await newProduct.save();
 
-    res.status(201).json({ success: true, product });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(201).json({ message: 'Product created successfully', product: newProduct });
+  } catch (err) {
+    console.error('Error creating product:', err.message);
+    res.status(500).json({ message: 'Server error' });
   }
 };
+
+export { createProduct };
