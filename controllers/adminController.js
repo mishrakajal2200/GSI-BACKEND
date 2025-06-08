@@ -2,6 +2,7 @@
 import User from '../models/User.js';
 import jwt from 'jsonwebtoken';
 import Order from '../models/Order.js';
+import Product from '../models/Product.js';
 
 // export const adminLogin = async (req, res) => {
 //   const { email, password } = req.body;
@@ -204,7 +205,6 @@ export const getRecentOrders = async (req, res) => {
   }
 };
 
-
 // ✅ Update Order Status
 export const updateOrderStatus = async (req, res) => {
   try {
@@ -225,5 +225,40 @@ export const updateOrderStatus = async (req, res) => {
     res.status(200).json({ message: "Order status updated", order });
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+export const createProduct = async (req, res) => {
+  try {
+    const {
+      name,
+      brand,
+      mainCategory,
+      subCategory,
+      subSubCategory,
+      price,
+      mrp,
+      description,
+    } = req.body;
+
+    const image = req.file ? `image/${req.file.filename}` : '';
+
+    const product = new Product({
+      name,
+      brand,
+      mainCategory,
+      subCategory,
+      subSubCategory,
+      price,
+      mrp,
+      description,
+      image,
+    });
+
+    await product.save();
+
+    res.status(201).json({ success: true, product });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
 };
