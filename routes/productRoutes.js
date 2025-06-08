@@ -1,7 +1,7 @@
 
 import express from 'express';
 import {
-  createProduct,
+
   getAllProducts,          // GET /api/products (with filters/sorting/pagination)
   getProductById,      // GET /api/products/:id
   updateProduct,       // PUT /api/products/:id
@@ -12,8 +12,6 @@ import {
 
 const router = express.Router();
 
-// Create a product
-router.post('/create', createProduct);
 
 // Get all products (with filtering, sorting, pagination)
 router.get('/products', getAllProducts);

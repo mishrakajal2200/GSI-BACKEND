@@ -13,13 +13,7 @@ router.get("/stats",authenticateUser, isAdmin, getAdminStats);
 router.get("/orders/recent", authenticateUser, isAdmin, getRecentOrders);
 router.patch("/orders/:id/status", authenticateUser, isAdmin, updateOrderStatus);
 
-router.post(
-  "/admin/products/create",
-  authenticateUser,
-  isAdmin,
-  upload.single("image"),
-  createProduct
-);
+router.post( "/create", authenticateUser,isAdmin,upload.single("image"),createProduct);
 
 
 export default router;

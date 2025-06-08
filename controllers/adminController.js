@@ -228,7 +228,7 @@ export const updateOrderStatus = async (req, res) => {
   }
 };
 
-const createProduct = async (req, res) => {
+export const createProduct = async (req, res) => {
   try {
     const {
       name,
@@ -268,4 +268,3 @@ const createProduct = async (req, res) => {
   }
 };
 
-export { createProduct };
