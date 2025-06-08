@@ -13,7 +13,7 @@ import {
 const router = express.Router();
 
 // Create a product
-router.post('/', createProduct);
+router.post('/create', createProduct);
 
 // Get all products (with filtering, sorting, pagination)
 router.get('/products', getAllProducts);
