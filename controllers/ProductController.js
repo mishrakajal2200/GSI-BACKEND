@@ -5,16 +5,16 @@ import Product from '../models/Product.js';
 
 // @desc    Create a new product
 // @route   POST /api/products
-export const createProduct = async (req, res) => {
-  try {
-    const newProduct = new Product(req.body);
-    const savedProduct = await newProduct.save();
-    res.status(201).json(savedProduct);
-  } catch (err) {
-    console.error(err);
-    res.status(400).json({ message: 'Failed to create product', error: err.message });
-  }
-};
+// export const createProduct = async (req, res) => {
+//   try {
+//     const newProduct = new Product(req.body);
+//     const savedProduct = await newProduct.save();
+//     res.status(201).json(savedProduct);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(400).json({ message: 'Failed to create product', error: err.message });
+//   }
+// };
 
 
 export const getAllProducts = async (req, res) => {
