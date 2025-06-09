@@ -166,7 +166,8 @@ export const createProduct = async (req, res) => {
       description,
     } = req.body;
 
-    const image = req.file ? `/public/image/${req.file.filename}` : null;
+    const imagePath = req.file ? `/image/${req.file.filename}` : '';
+
 
     if (!name || !price || !mrp || !brand || !image) {
       return res.status(400).json({ message: 'All required fields must be filled' });
@@ -181,7 +182,7 @@ export const createProduct = async (req, res) => {
       price,
       mrp,
       description,
-      image,
+      image:imagePath,
     });
 
     await newProduct.save();
