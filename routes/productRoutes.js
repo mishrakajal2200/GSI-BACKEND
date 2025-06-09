@@ -42,7 +42,7 @@ router.get('/products', getAllProducts);
 router.get("/search",searchProducts);
 
 // Get single product by ID
-router.get('/product/:id', getProductById);
+router.get('/:id', getProductById);
 
 // ✅ Update route
 router.put('/:id', authenticateUser, isAdmin, upload.single('image'), updateProduct);
