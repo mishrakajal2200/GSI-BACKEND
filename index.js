@@ -281,6 +281,9 @@ app.use('/api/filters', filtersRoutes);
 app.use('/api/payment', payment);
 app.use('/api/admin', adminRoutes);
 
+app.use('/uploads', express.static('uploads'));
+
+
 // ✅ Create Admin User
 const createAdmin = async () => {
   try {
