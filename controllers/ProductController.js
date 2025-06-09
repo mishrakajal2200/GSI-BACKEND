@@ -2,7 +2,8 @@
 
 import mongoose from 'mongoose'; 
 import Product from '../models/Product.js';
-
+import fs from 'fs';
+import path from 'path';
 
 // @desc    Create a new product
 // @route   POST /api/products
@@ -98,33 +99,16 @@ export const getProductById = async (req, res) => {
 
 export const updateProduct = async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id);
-
-    if (!product) return res.status(404).json({ message: 'Product not found' });
-
-    // Update only the fields that are present in the request
-    product.name = req.body.name || product.name;
-    product.brand = req.body.brand || product.brand;
-    product.mainCategory = req.body.mainCategory || product.mainCategory;
-    product.subCategory = req.body.subCategory || product.subCategory;
-    product.subSubCategory = req.body.subSubCategory || product.subSubCategory;
-    product.price = req.body.price || product.price;
-    product.mrp = req.body.mrp || product.mrp;
-    product.description = req.body.description || product.description;
-
-    // If an image is uploaded, update the image field
-    if (req.file) {
-      product.image = req.file.filename; // Or use full URL if needed
-    }
-
-    const updatedProduct = await product.save();
-    res.status(200).json(updatedProduct);
+    const updatedProduct = await Product.findByIdAndUpdate(
+      req.params.id,
+      { $set: req.body },
+      { new: true, runValidators: true }
+    );
+    if (!updatedProduct) return res.status(404).json({ message: 'Product not found' });
+    res.json(updatedProduct);
   } catch (err) {
     console.error(err);
-    res.status(400).json({
-      message: 'Failed to update product',
-      error: err.message,
-    });
+    res.status(400).json({ message: 'Failed to update product', error: err.message });
   }
 };
 
