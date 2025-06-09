@@ -45,7 +45,7 @@ router.get("/search",searchProducts);
 router.get('/product/:id', getProductById);
 
 // ✅ Update route
-router.put('/:id', authenticateUser, isAdmin, upload.single('image'), updateProduct);
+router.put('/:id', authenticateUser, isAdmin, updateProduct);
 
 
 
