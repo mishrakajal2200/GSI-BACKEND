@@ -42,7 +42,7 @@ router.get('/products', getAllProducts);
 router.get("/search",searchProducts);
 
 // Get single product by ID
-router.get('/:id', getProductById);
+router.get('/product/:id', getProductById);
 
 // ✅ Update route
 router.put('/:id', authenticateUser, isAdmin, upload.single('image'), updateProduct);
@@ -50,7 +50,7 @@ router.put('/:id', authenticateUser, isAdmin, upload.single('image'), updateProd
 
 
 router.delete(
-  '/adminedit/:id',
+  '/:id',
   authenticateUser,
   isAdmin,
   deleteProduct
