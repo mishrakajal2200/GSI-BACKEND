@@ -7,7 +7,7 @@ import {
   updateProduct,       // PUT /api/products/:id
   deleteProduct,
   searchProducts,       // DELETE /api/products/:id
- 
+
 } from '../controllers/ProductController.js';
 import upload from "../middleware/upload.js";
 import multer from 'multer';
@@ -47,7 +47,11 @@ router.get('/product/:id', getProductById);
 // Update product
 router.put('/product/:id', updateProduct);
 
-// Delete product
-router.delete('/product/:id', deleteProduct);
+router.delete(
+  '/getproducts/:id',
+  authenticateUser,
+  isAdmin,
+  deleteProduct
+);
 
 export default router;
