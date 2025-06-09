@@ -50,7 +50,7 @@ router.put('/:id', authenticateUser, isAdmin, upload.single('image'), updateProd
 
 
 router.delete(
-  '/:id',
+  '/adminedit/:id',
   authenticateUser,
   isAdmin,
   deleteProduct
