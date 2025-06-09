@@ -9,10 +9,14 @@ import {
   searchProducts,       // DELETE /api/products/:id
  
 } from '../controllers/ProductController.js';
+import upload from "../middleware/upload.js";
+import  { authenticateUser,isAdmin } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.post('/create', createProduct);
+router.post( "/adminroutes/create", authenticateUser,isAdmin,upload.single("image"),createProduct);
+
+
 // Get all products (with filtering, sorting, pagination)
 router.get('/products', getAllProducts);
 
