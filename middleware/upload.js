@@ -1,43 +1,29 @@
+// upload.js
 import multer from 'multer';
-import path from 'path';
-import fs from 'fs';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+import { v2 as cloudinary } from 'cloudinary';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import dotenv from 'dotenv';
 
-// Handle __dirname in ESM
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+dotenv.config(); // To load environment variables
 
-// Ensure upload directory exists
-const uploadDir = path.join(__dirname, '../public/image/');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
-
-// Configure storage
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadDir);
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + '-' + file.originalname);
-  }
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUD_API_KEY,
+  api_secret: process.env.CLOUD_API_SECRET,
 });
 
-// Filter allowed image types
-const fileFilter = (req, file, cb) => {
-  const allowedTypes = /jpeg|jpg|png|gif/;
-  const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-  const mimetype = allowedTypes.test(file.mimetype);
+// Configure Cloudinary Storage for Multer
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: 'products', // Folder in Cloudinary
+    allowed_formats: ['jpg', 'jpeg', 'png', 'webp'], // Valid formats
+    transformation: [{ width: 800, height: 800, crop: 'limit' }], // Optional: resize large images
+  },
+});
 
-  if (extname && mimetype) {
-    cb(null, true);
-  } else {
-    cb(new Error('Only images (jpeg, jpg, png, gif) are allowed!'));
-  }
-};
-
-// Multer upload middleware
-const upload = multer({ storage, fileFilter });
+// Multer Upload Middleware using Cloudinary
+const upload = multer({ storage });
 
 export default upload;

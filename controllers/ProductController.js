@@ -166,7 +166,7 @@ export const createProduct = async (req, res) => {
       description,
     } = req.body;
 
-    const imagePath = req.file ? `/image/${req.file.filename}` : '';
+    const imageUrl = req.file ? req.file.path : '';
 
 
     if (!name || !price || !mrp || !brand || !image) {
@@ -182,7 +182,7 @@ export const createProduct = async (req, res) => {
       price,
       mrp,
       description,
-      image:imagePath,
+      image:imageUrl,
     });
 
     await newProduct.save();
