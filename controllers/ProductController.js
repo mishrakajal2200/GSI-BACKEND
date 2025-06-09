@@ -166,7 +166,7 @@ export const createProduct = async (req, res) => {
       description,
     } = req.body;
 
-    const image = req.file?.path;
+    const image = req.file ? `/public/image/${req.file.filename}` : null;
 
     if (!name || !price || !mrp || !brand || !image) {
       return res.status(400).json({ message: 'All required fields must be filled' });
