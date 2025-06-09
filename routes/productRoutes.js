@@ -48,7 +48,7 @@ router.get('/product/:id', getProductById);
 router.put('/product/:id', updateProduct);
 
 router.delete(
-  '/getproducts/:id',
+  '/:id',
   authenticateUser,
   isAdmin,
   deleteProduct

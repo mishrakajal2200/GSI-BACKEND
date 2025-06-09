@@ -116,31 +116,16 @@ export const updateProduct = async (req, res) => {
 
 export const deleteProduct = async (req, res) => {
   try {
-    // Step 1: Find the product
-    const product = await Product.findById(req.params.id);
-    if (!product) return res.status(404).json({ message: 'Product not found' });
-
-    // Step 2: Delete the image from the server (if it exists)
-    const imagePath = path.join(process.cwd(), 'public', product.image); // product.image should be like 'images/filename.jpg'
-
-    fs.unlink(imagePath, (err) => {
-      if (err) {
-        console.warn('Image deletion error:', err.message);
-      } else {
-        console.log('Image deleted:', product.image);
-      }
-    });
-
-    // Step 3: Delete the product from MongoDB
-    await product.deleteOne();
+    const deletedProduct = await Product.findByIdAndDelete(req.params.id);
+    if (!deletedProduct) return res.status(404).json({ message: 'Product not found' });
 
     res.json({ message: 'Product deleted successfully' });
-
   } catch (err) {
-    console.error('Delete product error:', err);
+    console.error('Delete error:', err);
     res.status(500).json({ message: 'Failed to delete product' });
   }
 };
+
 
 // searchbar
 export const searchProducts = async (req, res) => {
