@@ -167,17 +167,14 @@
 
 
 // index.js
-import fs from 'fs';
+
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import nodemailer from 'nodemailer';
 import bodyParser from 'body-parser';
-import bcrypt from 'bcryptjs';
-import path from 'path'; // ✅ Missing import added
-import { fileURLToPath } from 'url';
-
+import path from 'path';
 import User from './models/User.js';
 import productRoutes from './routes/productRoutes.js';
 import userRoutes from './routes/userRoutes.js';
@@ -189,22 +186,12 @@ import filtersRoutes from './routes/filtersRoutes.js';
 import payment from './routes/payment.js';
 import adminRoutes from './routes/adminRoutes.js';
 
-// ✅ Setup __dirname in ESM
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 dotenv.config();
 const app = express();
 
-// ✅ Serve uploaded image files
-app.use('/image', express.static(path.join(__dirname, 'public/image')));
-app.use('/images', express.static(path.join(__dirname, 'src/images'))); // Optional: if you use this folder
-app.use("/uploads", express.static("/tmp/uploads"));
 
 
-if (!fs.existsSync('./uploads')) {
-  fs.mkdirSync('./uploads');
-}
 
 // ✅ Allowed CORS origins
 const allowedOrigins = [
@@ -287,7 +274,7 @@ app.use('/api/filters', filtersRoutes);
 app.use('/api/payment', payment);
 app.use('/api/admin', adminRoutes);
 
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
 // ✅ Create Admin User
