@@ -240,6 +240,9 @@ export const searchProducts = async (req, res) => {
 
 export const createProduct = async (req, res) => {
   try {
+    console.log("🧾 Incoming form data:", req.body);
+    console.log("🖼️ Uploaded file:", req.file);
+
     const {
       name,
       brand,
@@ -251,39 +254,36 @@ export const createProduct = async (req, res) => {
       description,
     } = req.body;
 
-    // ✅ Check if required fields are present
     if (!name || !brand || !price || !mrp || !req.file) {
       return res.status(400).json({
         error: "Please provide name, brand, price, MRP, and an image file",
       });
     }
 
-    // ✅ Create new product
     const product = new Product({
       name,
       brand,
-      mainCategory: mainCategory || "",       // optional fallback
-      subCategory: subCategory || "",         // optional fallback
-      subSubCategory: subSubCategory || "",   // optional fallback
+      mainCategory: mainCategory || "",
+      subCategory: subCategory || "",
+      subSubCategory: subSubCategory || "",
       price,
       mrp,
-      description: description || "",         // optional fallback
-      image: `/uploads/${req.file.filename}`, // image path stored for serving
+      description: description || "",
+      image: `/uploads/${req.file.filename}`,
     });
 
-    // ✅ Save to database
     const savedProduct = await product.save();
 
-    // ✅ Success response
     res.status(201).json({
       message: "✅ Product created successfully",
       product: savedProduct,
     });
   } catch (error) {
-    console.error("❌ Error in createProduct:", error.message);
-    res.status(500).json({ error: "Server error. Please try again later." });
+    console.error("❌ Error in createProduct:", error);
+    res.status(500).json({ error: error.message || "Server error" });
   }
 };
+
 
 
 
