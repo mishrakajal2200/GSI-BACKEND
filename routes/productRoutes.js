@@ -9,7 +9,7 @@ import {
   searchProducts,       // DELETE /api/products/:id
 
 } from '../controllers/ProductController.js';
-import {upload} from "../middleware/upload.js";
+import upload from "../middleware/upload.js";
 
 import  { authenticateUser,isAdmin } from "../middleware/authMiddleware.js";
 
