@@ -14,7 +14,7 @@ import {
 import upload from "../middleware/upload.js";
 
 import  { authenticateUser,isAdmin } from "../middleware/authMiddleware.js";
-import uploadCsv from '../middleware/uploadCsv.js';
+import {uploadCsv} from '../middleware/uploadCsv.js';
 const router = express.Router();
 
 

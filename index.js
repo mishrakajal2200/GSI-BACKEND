@@ -236,6 +236,7 @@ app.use((req, res, next) => {
 // ✅ Body parsers
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // ✅ Nodemailer setup

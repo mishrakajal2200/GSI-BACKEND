@@ -306,6 +306,13 @@ export const exportProducts = async (req, res) => {
 // import working on admin
 export const importProducts = async (req, res) => {
   try {
+    if (!req.file) {
+      console.log('No file received!');
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+
+    console.log('Received file:', req.file.originalname);
+
     const results = [];
     const stream = require('streamifier').createReadStream(req.file.buffer);
 
@@ -314,13 +321,17 @@ export const importProducts = async (req, res) => {
       .on('data', (data) => results.push(data))
       .on('end', async () => {
         await Product.insertMany(results);
-        res.status(200).json({ message: 'Products imported successfully', count: results.length });
+        res.status(200).json({
+          message: 'Products imported successfully',
+          count: results.length
+        });
       });
   } catch (error) {
-    console.error('Import error:', error);
+    console.error('Import error:', error.message);
     res.status(500).json({ error: 'Failed to import products' });
   }
 };
+
 
 
 
