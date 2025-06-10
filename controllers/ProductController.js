@@ -198,46 +198,6 @@ export const searchProducts = async (req, res) => {
 //   }
 // };
 
-// export const createProduct = async (req, res) => {
-//   try {
-//     const {
-//       name,
-//       brand,
-//       mainCategory,
-//       subCategory,
-//       subSubCategory,
-//       price,
-//       mrp,
-//       description,
-//     } = req.body;
-
-//     // Check required fields
-//     if (!name || !brand || !price || !mrp || !req.file) {
-//       return res.status(400).json({ error: "All required fields must be provided" });
-//     }
-
-//     const product = new Product({
-//       name,
-//       brand,
-//       mainCategory,
-//       subCategory,
-//       subSubCategory,
-//       price,
-//       mrp,
-//       description,
-//       image: req.file.filename, // Save image file name
-//     });
-
-//     await product.save();
-
-//     res.status(201).json({ message: "Product created successfully", product });
-//   } catch (error) {
-//     console.error("Error in createProduct:", error);
-//     res.status(500).json({ error: "Server error" });
-//   }
-// };
-
-
 export const createProduct = async (req, res) => {
   try {
     const {
@@ -251,23 +211,30 @@ export const createProduct = async (req, res) => {
       description,
     } = req.body;
 
-    const newProduct = new Product({
+    // Check required fields
+    if (!name || !brand || !price || !mrp || !req.file) {
+      return res.status(400).json({ error: "All required fields must be provided" });
+    }
+
+    const product = new Product({
       name,
       brand,
       mainCategory,
       subCategory,
       subSubCategory,
-      price: Number(price),
-      mrp: Number(mrp),
+      price,
+      mrp,
       description,
-      image: req.file ? 'uploads/' + req.file.filename : null,
+      image: req.file.filename, // Save image file name
     });
 
-    await newProduct.save();
+    await product.save();
 
-    res.status(201).json({ message: 'Product created successfully', product: newProduct });
+    res.status(201).json({ message: "Product created successfully", product });
   } catch (error) {
-    console.error('Error creating product:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error("Error in createProduct:", error);
+    res.status(500).json({ error: "Server error" });
   }
 };
+
+
