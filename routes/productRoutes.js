@@ -16,7 +16,7 @@ import  { authenticateUser,isAdmin } from "../middleware/authMiddleware.js";
 const router = express.Router();
 
 
-router.post("/admincreate/create",authenticateUser,isAdmin, upload.single("image"), createProduct);
+router.post("/create",authenticateUser,isAdmin, upload.single("image"), createProduct);
 
 // Get all products (with filtering, sorting, pagination)
 router.get('/products', getAllProducts);
