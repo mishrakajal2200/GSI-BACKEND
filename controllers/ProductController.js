@@ -2,7 +2,8 @@
 
 import mongoose from 'mongoose'; 
 import Product from '../models/Product.js';
-
+import { Parser } from 'json2csv';
+import csv from 'csv-parser';
 // @desc    Create a new product
 // @route   POST /api/products
 // export const createProduct = async (req, res) => {
@@ -237,7 +238,7 @@ export const searchProducts = async (req, res) => {
 
 
 
-
+// add product from frontend
 export const createProduct = async (req, res) => {
   try {
     console.log("🧾 Incoming form data:", req.body);
@@ -281,6 +282,43 @@ export const createProduct = async (req, res) => {
   } catch (error) {
     console.error("❌ Error in createProduct:", error);
     res.status(500).json({ error: error.message || "Server error" });
+  }
+};
+
+// export workiing on admin 
+export const exportProducts = async (req, res) => {
+  try {
+    const products = await Product.find();
+
+    const fields = ['name', 'brand', 'mainCategory', 'subCategory', 'subSubCategory', 'price', 'mrp', 'description'];
+    const parser = new Parser({ fields });
+    const csv = parser.parse(products);
+
+    res.header('Content-Type', 'text/csv');
+    res.attachment('products.csv');
+    res.send(csv);
+  } catch (error) {
+    console.error('Export error:', error);
+    res.status(500).json({ error: 'Failed to export products' });
+  }
+};
+
+// import working on admin
+export const importProducts = async (req, res) => {
+  try {
+    const results = [];
+    const stream = require('streamifier').createReadStream(req.file.buffer);
+
+    stream
+      .pipe(csv())
+      .on('data', (data) => results.push(data))
+      .on('end', async () => {
+        await Product.insertMany(results);
+        res.status(200).json({ message: 'Products imported successfully', count: results.length });
+      });
+  } catch (error) {
+    console.error('Import error:', error);
+    res.status(500).json({ error: 'Failed to import products' });
   }
 };
 

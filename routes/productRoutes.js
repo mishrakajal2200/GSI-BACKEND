@@ -6,13 +6,15 @@ import {
   getProductById,      // GET /api/products/:id
   updateProduct,       // PUT /api/products/:id
   deleteProduct,
-  searchProducts,       // DELETE /api/products/:id
+  searchProducts, 
+  exportProducts,
+  importProducts     
 
 } from '../controllers/ProductController.js';
 import upload from "../middleware/upload.js";
 
 import  { authenticateUser,isAdmin } from "../middleware/authMiddleware.js";
-
+import uploadCsv from '../middleware/uploadCsv.js';
 const router = express.Router();
 
 
@@ -30,7 +32,11 @@ router.get('/product/:id', getProductById);
 // ✅ Update route
 router.put('/:id', authenticateUser, isAdmin, updateProduct);
 
+// export admin routes
+router.get('/adminroutes/export', authenticateUser, isAdmin, exportProducts);
 
+// import admin route 
+router.post('/adminroutes/import', authenticateUser, isAdmin, uploadCsv.single('file'), importProducts);
 
 router.delete(
   '/:id',
