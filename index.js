@@ -167,6 +167,7 @@
 
 
 // index.js
+import fs from 'fs';
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
@@ -198,7 +199,12 @@ const app = express();
 // ✅ Serve uploaded image files
 app.use('/image', express.static(path.join(__dirname, 'public/image')));
 app.use('/images', express.static(path.join(__dirname, 'src/images'))); // Optional: if you use this folder
-app.use("/uploads", express.static("uploads"));
+app.use("/uploads", express.static("/tmp/uploads"));
+
+
+if (!fs.existsSync('./uploads')) {
+  fs.mkdirSync('./uploads');
+}
 
 // ✅ Allowed CORS origins
 const allowedOrigins = [
