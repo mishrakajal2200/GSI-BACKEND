@@ -157,6 +157,47 @@ export const searchProducts = async (req, res) => {
 };
 
 // create product on admin side
+// export const createProduct = async (req, res) => {
+//   try {
+//     const {
+//       name,
+//       brand,
+//       mainCategory,
+//       subCategory,
+//       subSubCategory,
+//       price,
+//       mrp,
+//       description,
+//     } = req.body;
+
+//     const imageUrl = req.file ? req.file.path : '';
+
+
+//     if (!name || !price || !mrp || !brand || !image) {
+//       return res.status(400).json({ message: 'All required fields must be filled' });
+//     }
+
+//     const newProduct = new Product({
+//       name,
+//       brand,
+//       mainCategory,
+//       subCategory,
+//       subSubCategory,
+//       price,
+//       mrp,
+//       description,
+//       image:imageUrl,
+//     });
+
+//     await newProduct.save();
+
+//     res.status(201).json({ message: 'Product created successfully', product: newProduct });
+//   } catch (err) {
+//     console.error('Error creating product:', err.message);
+//     res.status(500).json({ message: 'Server error' });
+//   }
+// };
+
 export const createProduct = async (req, res) => {
   try {
     const {
@@ -170,14 +211,12 @@ export const createProduct = async (req, res) => {
       description,
     } = req.body;
 
-    const imageUrl = req.file ? req.file.path : '';
-
-
-    if (!name || !price || !mrp || !brand || !image) {
-      return res.status(400).json({ message: 'All required fields must be filled' });
+    // Check required fields
+    if (!name || !brand || !price || !mrp || !req.file) {
+      return res.status(400).json({ error: "All required fields must be provided" });
     }
 
-    const newProduct = new Product({
+    const product = new Product({
       name,
       brand,
       mainCategory,
@@ -186,14 +225,14 @@ export const createProduct = async (req, res) => {
       price,
       mrp,
       description,
-      image:imageUrl,
+      image: req.file.filename, // Save image file name
     });
 
-    await newProduct.save();
+    await product.save();
 
-    res.status(201).json({ message: 'Product created successfully', product: newProduct });
-  } catch (err) {
-    console.error('Error creating product:', err.message);
-    res.status(500).json({ message: 'Server error' });
+    res.status(201).json({ message: "Product created successfully", product });
+  } catch (error) {
+    console.error("Error in createProduct:", error);
+    res.status(500).json({ error: "Server error" });
   }
 };

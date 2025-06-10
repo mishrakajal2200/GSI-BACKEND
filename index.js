@@ -198,7 +198,7 @@ const app = express();
 // ✅ Serve uploaded image files
 app.use('/image', express.static(path.join(__dirname, 'public/image')));
 app.use('/images', express.static(path.join(__dirname, 'src/images'))); // Optional: if you use this folder
-app.use('/uploads', express.static(path.join(path.resolve(), 'uploads')));
+app.use("/uploads", express.static("uploads"));
 
 // ✅ Allowed CORS origins
 const allowedOrigins = [
