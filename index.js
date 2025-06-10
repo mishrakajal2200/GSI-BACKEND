@@ -187,10 +187,14 @@ import payment from './routes/payment.js';
 import adminRoutes from './routes/adminRoutes.js';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-   
-
+import fs from 'fs';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+const uploadPath = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadPath)) {
+  fs.mkdirSync(uploadPath);
+}
 dotenv.config();
 const app = express();
 
@@ -279,7 +283,7 @@ app.use('/api/payment', payment);
 app.use('/api/admin', adminRoutes);
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
+app.use('/uploads', express.static(uploadPath));
 
 // ✅ Create Admin User
 const createAdmin = async () => {

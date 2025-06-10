@@ -2,8 +2,6 @@
 
 import mongoose from 'mongoose'; 
 import Product from '../models/Product.js';
-import fs from 'fs';
-import path from 'path';
 
 // @desc    Create a new product
 // @route   POST /api/products
@@ -198,6 +196,48 @@ export const searchProducts = async (req, res) => {
 //   }
 // };
 
+// export const createProduct = async (req, res) => {
+//   try {
+//     const {
+//       name,
+//       brand,
+//       mainCategory,
+//       subCategory,
+//       subSubCategory,
+//       price,
+//       mrp,
+//       description,
+//     } = req.body;
+
+//     // Check required fields
+//     if (!name || !brand || !price || !mrp || !req.file) {
+//       return res.status(400).json({ error: "All required fields must be provided" });
+//     }
+
+//     const product = new Product({
+//       name,
+//       brand,
+//       mainCategory,
+//       subCategory,
+//       subSubCategory,
+//       price,
+//       mrp,
+//       description,
+//       image: req.file.filename, // Save image file name
+//     });
+
+//     await product.save();
+
+//     res.status(201).json({ message: "Product created successfully", product });
+//   } catch (error) {
+//     console.error("Error in createProduct:", error);
+//     res.status(500).json({ error: "Server error" });
+//   }
+// };
+
+
+
+
 export const createProduct = async (req, res) => {
   try {
     const {
@@ -211,30 +251,39 @@ export const createProduct = async (req, res) => {
       description,
     } = req.body;
 
-    // Check required fields
+    // ✅ Check if required fields are present
     if (!name || !brand || !price || !mrp || !req.file) {
-      return res.status(400).json({ error: "All required fields must be provided" });
+      return res.status(400).json({
+        error: "Please provide name, brand, price, MRP, and an image file",
+      });
     }
 
+    // ✅ Create new product
     const product = new Product({
       name,
       brand,
-      mainCategory,
-      subCategory,
-      subSubCategory,
+      mainCategory: mainCategory || "",       // optional fallback
+      subCategory: subCategory || "",         // optional fallback
+      subSubCategory: subSubCategory || "",   // optional fallback
       price,
       mrp,
-      description,
-      image: req.file.filename, // Save image file name
+      description: description || "",         // optional fallback
+      image: `/uploads/${req.file.filename}`, // image path stored for serving
     });
 
-    await product.save();
+    // ✅ Save to database
+    const savedProduct = await product.save();
 
-    res.status(201).json({ message: "Product created successfully", product });
+    // ✅ Success response
+    res.status(201).json({
+      message: "✅ Product created successfully",
+      product: savedProduct,
+    });
   } catch (error) {
-    console.error("Error in createProduct:", error);
-    res.status(500).json({ error: "Server error" });
+    console.error("❌ Error in createProduct:", error.message);
+    res.status(500).json({ error: "Server error. Please try again later." });
   }
 };
+
 
 
