@@ -41,17 +41,19 @@ const allowedOrigins = [
 const corsOptions = {
   origin: function (origin, callback) {
     console.log("🟡 CORS Origin:", origin);
+    // Accept requests with no origin (e.g., curl, same-origin)
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       console.error("🔴 Blocked by CORS:", origin);
-      callback(new Error('Not allowed by CORS'));
+      callback(null, false); // Don't throw error, just block CORS headers
     }
   },
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
 };
+
 
 app.use(cors(corsOptions));
 
