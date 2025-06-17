@@ -32,14 +32,12 @@ const app = express();
 
 
 
-// ✅ Allowed CORS origins
 const allowedOrigins = [
   'https://gsienterprises.com',
   'https://www.gsienterprises.com',
   'https://preeminent-begonia-54c21c.netlify.app',
 ];
 
-// ✅ CORS options
 const corsOptions = {
   origin: function (origin, callback) {
     console.log("🟡 CORS Origin:", origin);
