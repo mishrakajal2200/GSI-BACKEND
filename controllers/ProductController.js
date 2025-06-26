@@ -155,9 +155,12 @@ export const searchProducts = async (req, res) => {
   }
 };
 
-// create product on admin side
+// add product from frontend
 // export const createProduct = async (req, res) => {
 //   try {
+//     console.log("🧾 Incoming form data:", req.body);
+//     console.log("🖼️ Uploaded file:", req.file);
+
 //     const {
 //       name,
 //       brand,
@@ -169,80 +172,42 @@ export const searchProducts = async (req, res) => {
 //       description,
 //     } = req.body;
 
-//     const imageUrl = req.file ? req.file.path : '';
-
-
-//     if (!name || !price || !mrp || !brand || !image) {
-//       return res.status(400).json({ message: 'All required fields must be filled' });
-//     }
-
-//     const newProduct = new Product({
-//       name,
-//       brand,
-//       mainCategory,
-//       subCategory,
-//       subSubCategory,
-//       price,
-//       mrp,
-//       description,
-//       image:imageUrl,
-//     });
-
-//     await newProduct.save();
-
-//     res.status(201).json({ message: 'Product created successfully', product: newProduct });
-//   } catch (err) {
-//     console.error('Error creating product:', err.message);
-//     res.status(500).json({ message: 'Server error' });
-//   }
-// };
-
-// export const createProduct = async (req, res) => {
-//   try {
-//     const {
-//       name,
-//       brand,
-//       mainCategory,
-//       subCategory,
-//       subSubCategory,
-//       price,
-//       mrp,
-//       description,
-//     } = req.body;
-
-//     // Check required fields
 //     if (!name || !brand || !price || !mrp || !req.file) {
-//       return res.status(400).json({ error: "All required fields must be provided" });
+//       return res.status(400).json({
+//         error: "Please provide name, brand, price, MRP, and an image file",
+//       });
 //     }
 
 //     const product = new Product({
 //       name,
 //       brand,
-//       mainCategory,
-//       subCategory,
-//       subSubCategory,
+//       mainCategory: mainCategory || "",
+//       subCategory: subCategory || "",
+//       subSubCategory: subSubCategory || "",
 //       price,
 //       mrp,
-//       description,
-//       image: req.file.filename, // Save image file name
+//       description: description || "",
+//       image: `/uploads/${req.file.filename}`,
 //     });
 
-//     await product.save();
+//     const savedProduct = await product.save();
 
-//     res.status(201).json({ message: "Product created successfully", product });
+//     res.status(201).json({
+//       message: "✅ Product created successfully",
+//       product: savedProduct,
+//     });
 //   } catch (error) {
-//     console.error("Error in createProduct:", error);
-//     res.status(500).json({ error: "Server error" });
+//     console.error("❌ Error in createProduct:", error);
+//     res.status(500).json({ error: error.message || "Server error" });
 //   }
 // };
 
+import Product from "../models/productModel.js";
 
-
-// add product from frontend
 export const createProduct = async (req, res) => {
   try {
     console.log("🧾 Incoming form data:", req.body);
-    console.log("🖼️ Uploaded file:", req.file);
+    console.log("🖼️ Uploaded files:", req.files); // multiple images
 
     const {
       name,
@@ -250,14 +215,41 @@ export const createProduct = async (req, res) => {
       mainCategory,
       subCategory,
       subSubCategory,
-      price,
-      mrp,
       description,
+      mrp,
+      variants, // this is expected to be JSON string
     } = req.body;
 
-    if (!name || !brand || !price || !mrp || !req.file) {
+    if (!name || !brand || !mrp || !variants) {
       return res.status(400).json({
-        error: "Please provide name, brand, price, MRP, and an image file",
+        error: "Please provide name, brand, MRP, and variants",
+      });
+    }
+
+    // Parse variants from JSON string to object
+    let parsedVariants;
+    try {
+      parsedVariants = JSON.parse(variants);
+    } catch (error) {
+      return res.status(400).json({ error: "Invalid variants JSON" });
+    }
+
+    // Attach uploaded image paths to each variant
+    if (req.files && req.files.length > 0) {
+      let fileIndex = 0;
+      parsedVariants = parsedVariants.map((variant) => {
+        const imageCount = variant.imageCount || 1;
+        const images = [];
+
+        for (let i = 0; i < imageCount && fileIndex < req.files.length; i++) {
+          images.push(`/uploads/${req.files[fileIndex].filename}`);
+          fileIndex++;
+        }
+
+        return {
+          ...variant,
+          images,
+        };
       });
     }
 
@@ -267,10 +259,9 @@ export const createProduct = async (req, res) => {
       mainCategory: mainCategory || "",
       subCategory: subCategory || "",
       subSubCategory: subSubCategory || "",
-      price,
-      mrp,
       description: description || "",
-      image: `/uploads/${req.file.filename}`,
+      mrp,
+      variants: parsedVariants,
     });
 
     const savedProduct = await product.save();
@@ -284,6 +275,7 @@ export const createProduct = async (req, res) => {
     res.status(500).json({ error: error.message || "Server error" });
   }
 };
+
 
 // export workiing on admin 
 export const exportProducts = async (req, res) => {
