@@ -32,16 +32,17 @@ const userSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Product',
     }],
-    cart: [{
-      productId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Product',
-      },
-      quantity: {
-        type: Number,
-        required: true,
-      },
-    }],
+    cart: [
+  {
+    productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
+    name: String,
+    image: String,
+    price: Number,
+    quantity: { type: Number, default: 1 },
+    color: String,
+    size: String,
+  }
+],
     address: { type: String },  // Optional, will be updated at checkout
     phone: { type: String },  // Optional, will be updated at checkout
   },

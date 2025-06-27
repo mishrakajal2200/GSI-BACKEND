@@ -27,31 +27,15 @@
 // export default Cart;
 
 
-// backend/models/Cart.js (ESM)
-
 import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
 const CartSchema = new Schema({
-  user: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
-  },
-
   items: [
     {
       productId: {
         type: Schema.Types.ObjectId,
         ref: 'Product',
-        required: true,
-      },
-      name: {
-        type: String,
-        required: true,
-      },
-      price: {
-        type: Number,
         required: true,
       },
       quantity: {
@@ -60,17 +44,17 @@ const CartSchema = new Schema({
         default: 1,
         min: [1, 'Quantity must be at least 1'],
       },
-      color: {
+      selectedColor: {
         type: String,
         required: true,
       },
-      size: {
+      selectedSize: {
         type: String,
         required: true,
       },
-      image: {
-        type: String, // Or use [String] if storing multiple
-        required: true,
+      selectedImage: {
+        type: String, // optional: store thumbnail/front image used in cart
+        default: '',
       },
     },
   ],

@@ -107,35 +107,39 @@ export const addToCart = async (req, res) => {
       return res.status(400).json({ message: "Missing required product variant details." });
     }
 
-    // Fetch the product
+    // Check if the product exists
     const product = await Product.findById(productId);
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    // Fetch the user
+    // Get user
     const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
     if (!Array.isArray(user.cart)) {
       user.cart = [];
     }
 
-    // Check if the same variant (productId + color + size) is already in cart
+    // Check if same variant already in cart
     const existingItem = user.cart.find(
       item =>
-        item.productId?.toString() === productId &&
+        item.productId.toString() === productId &&
         item.color === color &&
         item.size === size
     );
 
     if (existingItem) {
-      // Increase quantity
+      // Increment quantity if already exists
       existingItem.quantity += 1;
     } else {
-      // Add new variant item to cart
+      // Add new item
       user.cart.push({
         productId,
         name: product.name,
-        image, // Variant image
+        image, // Optional: you can use product.images.front or passed from frontend
         price,
         quantity: 1,
         color,
@@ -143,10 +147,13 @@ export const addToCart = async (req, res) => {
       });
     }
 
-    // Save updated user cart
     await user.save();
 
-    return res.status(200).json({ cart: user.cart });
+    return res.status(200).json({
+      message: "Item added to cart successfully",
+      cart: user.cart
+    });
+
   } catch (error) {
     console.error("Error adding to cart:", error);
     return res.status(500).json({ message: "Something went wrong while adding to cart." });
