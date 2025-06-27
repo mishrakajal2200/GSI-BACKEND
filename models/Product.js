@@ -93,6 +93,11 @@ const productSchema = new mongoose.Schema({
     trim: true,
   },
 
+  mrp: {
+    type: Number,
+    required: true
+  },
+
   subCategory: {
     type: String,
     trim: true,
