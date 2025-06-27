@@ -56,52 +56,102 @@ export const getCart = async (req, res) => {
 };
 
 
+// export const addToCart = async (req, res) => {
+//   const { productId } = req.body;
+//   const userId = req.user.id;
 
+//   // Fetch the product
+//   const product = await Product.findById(productId);
+//   if (!product) return res.status(404).json({ message: "Product not found" });
 
+//   // Find the user
+//   const user = await User.findById(userId);
+//   if (!Array.isArray(user.cart)) {
+//      user.cart = [];
+//   }
 
+//   // Check if the item already exists in the cart
+//     const existingItem = user.cart.find(
+//    (item) => item.productId?.toString() === productId
+//   );
+
+//   if (existingItem) {
+//     // If it already exists, increase quantity
+//     existingItem.quantity += 1;
+//   } else {
+//     // If not, add it to the cart
+//     user.cart.push({
+//       productId,
+//       name: product.name,
+//       image: product.image,
+//       price: product.price,
+//       quantity: 1,
+//     });
+//   }
+
+//   // Save the updated user data
+//   await user.save();
+
+//   // Respond with the updated cart
+//   return res.status(200).json({ cart: user.cart });
+// };
 
 
 export const addToCart = async (req, res) => {
-  const { productId } = req.body;
-  const userId = req.user.id;
+  try {
+    const { productId, color, size, image, price } = req.body;
+    const userId = req.user.id;
 
-  // Fetch the product
-  const product = await Product.findById(productId);
-  if (!product) return res.status(404).json({ message: "Product not found" });
+    // Validate required fields
+    if (!productId || !color || !size || !image || !price) {
+      return res.status(400).json({ message: "Missing required product variant details." });
+    }
 
-  // Find the user
-  const user = await User.findById(userId);
-  if (!Array.isArray(user.cart)) {
-     user.cart = [];
-  }
+    // Fetch the product
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
 
-  // Check if the item already exists in the cart
+    // Fetch the user
+    const user = await User.findById(userId);
+    if (!Array.isArray(user.cart)) {
+      user.cart = [];
+    }
+
+    // Check if the same variant (productId + color + size) is already in cart
     const existingItem = user.cart.find(
-   (item) => item.productId?.toString() === productId
-  );
+      item =>
+        item.productId?.toString() === productId &&
+        item.color === color &&
+        item.size === size
+    );
 
-  if (existingItem) {
-    // If it already exists, increase quantity
-    existingItem.quantity += 1;
-  } else {
-    // If not, add it to the cart
-    user.cart.push({
-      productId,
-      name: product.name,
-      image: product.image,
-      price: product.price,
-      quantity: 1,
-    });
+    if (existingItem) {
+      // Increase quantity
+      existingItem.quantity += 1;
+    } else {
+      // Add new variant item to cart
+      user.cart.push({
+        productId,
+        name: product.name,
+        image, // Variant image
+        price,
+        quantity: 1,
+        color,
+        size,
+      });
+    }
+
+    // Save updated user cart
+    await user.save();
+
+    return res.status(200).json({ cart: user.cart });
+  } catch (error) {
+    console.error("Error adding to cart:", error);
+    return res.status(500).json({ message: "Something went wrong while adding to cart." });
   }
-
-  // Save the updated user data
-  await user.save();
-
-  // Respond with the updated cart
-  return res.status(200).json({ cart: user.cart });
 };
-
-
 
 
 
