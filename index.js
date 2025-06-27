@@ -69,7 +69,27 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
+
+
+
+// 🧠 Storage config (no timestamp added to filename)
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/');
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.originalname); // Don't change the name
+  },
+});
+
+const upload = multer({ storage });
+
+
+app.post('/api/upload', upload.single('image'), (req, res) => {
+  const imagePath = `/uploads/${req.file.originalname}`;
+  res.json({ image: imagePath });
+});
+
 
 // ✅ Nodemailer setup
 const transporter = nodemailer.createTransport({
