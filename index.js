@@ -23,6 +23,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const uploadPath = path.join(__dirname, 'uploads');
+
 if (!fs.existsSync(uploadPath)) {
   fs.mkdirSync(uploadPath);
 }
@@ -68,6 +69,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // ✅ Nodemailer setup
 const transporter = nodemailer.createTransport({
