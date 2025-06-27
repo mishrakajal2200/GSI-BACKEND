@@ -67,7 +67,7 @@ import mongoose from 'mongoose';
 const variantSchema = new mongoose.Schema({
   color: String,
   size: String,
-  images: [String],
+  image: [String],
   price: Number,
   stock: Number,
 }, { _id: false });
