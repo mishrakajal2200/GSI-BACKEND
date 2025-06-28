@@ -113,6 +113,7 @@ const productSchema = new mongoose.Schema({
     required: true,
   },
 
+  
   // 👇 Multiple images: front, side, back
   images: {
     front: { type: String, default: '' },
