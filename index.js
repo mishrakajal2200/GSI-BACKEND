@@ -226,7 +226,7 @@ app.use('/uploads', express.static(uploadPath));
 const allowedOrigins = [
   'https://gsienterprises.com',
   'https://www.gsienterprises.com',
-  'https://gsi-enterprises.netlify.app',
+  'https://preeminent-begonia-54c21c.netlify.app',
 ];
 
 const corsOptions = {

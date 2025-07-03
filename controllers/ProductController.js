@@ -2,7 +2,7 @@
 
 import mongoose from 'mongoose'; 
 import Product from '../models/Product.js';
-import { Parser } from 'json2csv';
+import ExcelJS from 'exceljs';
 import csv from 'csv-parser';
 // @desc    Create a new product
 // @route   POST /api/products
@@ -282,13 +282,39 @@ export const exportProducts = async (req, res) => {
   try {
     const products = await Product.find();
 
-    const fields = ['name', 'brand', 'mainCategory', 'subCategory', 'subSubCategory', 'price', 'mrp', 'description'];
-    const parser = new Parser({ fields });
-    const csv = parser.parse(products);
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Products');
 
-    res.header('Content-Type', 'text/csv');
-    res.attachment('products.csv');
-    res.send(csv);
+    // Define the headers
+    worksheet.columns = [
+      { header: 'Name', key: 'name', width: 20 },
+      { header: 'Brand', key: 'brand', width: 20 },
+      { header: 'Main Category', key: 'mainCategory', width: 20 },
+      { header: 'Sub Category', key: 'subCategory', width: 20 },
+      { header: 'Sub Sub Category', key: 'subSubCategory', width: 20 },
+      { header: 'Price', key: 'price', width: 10 },
+      { header: 'MRP', key: 'mrp', width: 10 },
+      { header: 'Description', key: 'description', width: 30 }
+    ];
+
+    // Add data
+    products.forEach((product) => {
+      worksheet.addRow(product);
+    });
+
+    // Set headers for Excel file
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    );
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename=products.xlsx'
+    );
+
+    // Send the file
+    await workbook.xlsx.write(res);
+    res.end();
   } catch (error) {
     console.error('Export error:', error);
     res.status(500).json({ error: 'Failed to export products' });
