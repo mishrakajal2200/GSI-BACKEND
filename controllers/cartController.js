@@ -54,14 +54,14 @@ export const cleanCart = async (req, res) => {
 //     res.status(500).json({ message: 'Internal server error while fetching cart' });
 //   }
 // };
-export const getCart = async (req, res) => {
-  try {
-    const cart = await Cart.findOne({ userId: req.user._id });
-    res.json(cart || { items: [] });
-  } catch (err) {
-    res.status(500).json({ message: "Error fetching cart" });
-  }
-};
+// export const getCart = async (req, res) => {
+//   try {
+//     const cart = await Cart.findOne({ userId: req.user._id });
+//     res.json(cart || { items: [] });
+//   } catch (err) {
+//     res.status(500).json({ message: "Error fetching cart" });
+//   }
+// };
 
 
 // export const addToCart = async (req, res) => {
@@ -146,6 +146,18 @@ export const getCart = async (req, res) => {
 //     res.status(500).json({ message: "Error adding to cart" });
 //   }
 // };
+
+ 
+export const getCart = async (req, res) => {
+  try {
+    const cart = await Cart.findOne({ userId: req.user._id }).populate("items.productId"); // ✅ Populate full product data
+    res.json(cart || { items: [] });
+  } catch (err) {
+    res.status(500).json({ message: "Error fetching cart" });
+  }
+};
+
+
 export const addToCart = async (req, res) => {
   const { productId, quantity = 1, selectedColor, size, cartImage } = req.body;
 

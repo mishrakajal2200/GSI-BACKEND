@@ -285,7 +285,6 @@ export const exportProducts = async (req, res) => {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Products');
 
-    // Define the headers
     worksheet.columns = [
       { header: 'Name', key: 'name', width: 20 },
       { header: 'Brand', key: 'brand', width: 20 },
@@ -297,22 +296,16 @@ export const exportProducts = async (req, res) => {
       { header: 'Description', key: 'description', width: 30 }
     ];
 
-    // Add data
     products.forEach((product) => {
       worksheet.addRow(product);
     });
 
-    // Set headers for Excel file
     res.setHeader(
       'Content-Type',
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     );
-    res.setHeader(
-      'Content-Disposition',
-      'attachment; filename=products.xlsx'
-    );
+    res.setHeader('Content-Disposition', 'attachment; filename=products.xlsx');
 
-    // Send the file
     await workbook.xlsx.write(res);
     res.end();
   } catch (error) {
@@ -325,25 +318,46 @@ export const exportProducts = async (req, res) => {
 export const importProducts = async (req, res) => {
   try {
     if (!req.file) {
-      console.log('No file received!');
       return res.status(400).json({ error: 'No file uploaded' });
     }
 
-    console.log('Received file:', req.file.originalname);
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.load(req.file.buffer);
 
-    const results = [];
-    const stream = require('streamifier').createReadStream(req.file.buffer);
+    const worksheet = workbook.worksheets[0];
+    const products = [];
 
-    stream
-      .pipe(csv())
-      .on('data', (data) => results.push(data))
-      .on('end', async () => {
-        await Product.insertMany(results);
-        res.status(200).json({
-          message: 'Products imported successfully',
-          count: results.length
-        });
+    worksheet.eachRow((row, rowNumber) => {
+      if (rowNumber === 1) return; // skip headers
+
+      const [
+        name,
+        brand,
+        mainCategory,
+        subCategory,
+        subSubCategory,
+        price,
+        mrp,
+        description
+      ] = row.values.slice(1); // slice to remove Excel internal ID
+
+      products.push({
+        name,
+        brand,
+        mainCategory,
+        subCategory,
+        subSubCategory,
+        price,
+        mrp,
+        description
       });
+    });
+
+    await Product.insertMany(products);
+    res.status(200).json({
+      message: 'Products imported successfully',
+      count: products.length
+    });
   } catch (error) {
     console.error('Import error:', error.message);
     res.status(500).json({ error: 'Failed to import products' });

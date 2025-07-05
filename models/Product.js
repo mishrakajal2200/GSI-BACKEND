@@ -113,41 +113,18 @@ const productSchema = new mongoose.Schema({
     required: true,
   },
 
-  
+  image: String,
   // 👇 Multiple images: front, side, back
   images: {
-    front: { type: String, default: '' },
-    side: { type: String, default: '' },
-    back: { type: String, default: '' },
+    type: [String],
+    default: []
   },
 
   // 👇 Description
   description: {
     type: String,
     trim: true,
-  },
-
-  // 👇 Available colors
-  colors: [
-    {
-      type: String,
-      trim: true,
-    }
-  ],
-
-  // 👇 Available sizes (if needed)
-  sizes: [
-    {
-      type: String,
-      trim: true,
-    }
-  ],
-
-  // 👇 Optional: In-stock status by variant
-  inStock: {
-    type: Boolean,
-    default: true,
-  },
+  }
 
 }, { timestamps: true });
 
