@@ -213,14 +213,8 @@ dotenv.config();
 // ✅ App setup
 const app = express();
 
-// ✅ Uploads folder setup
-const uploadPath = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadPath)) {
-  fs.mkdirSync(uploadPath);
-}
-
-// ✅ Serve uploaded images
-app.use('/uploads', express.static(uploadPath));
+// 👇 This line serves static files from public folder
+app.use('/image', express.static(path.join(__dirname, 'public/image')));
 
 // ✅ CORS Configuration
 const allowedOrigins = [
