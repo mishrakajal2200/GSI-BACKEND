@@ -186,7 +186,7 @@ import dotenv from 'dotenv';
 import nodemailer from 'nodemailer';
 import bodyParser from 'body-parser';
 import path from 'path';
-import fs from 'fs';
+
 import multer from 'multer';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -207,14 +207,16 @@ import adminRoutes from './routes/adminRoutes.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+
+
+// 👇 This line serves static files from public folder
+app.use('/image', express.static(path.join(__dirname, 'public/image')));
+
 // ✅ Load environment variables
 dotenv.config();
 
 // ✅ App setup
 const app = express();
-
-// 👇 This line serves static files from public folder
-app.use('/image', express.static(path.join(__dirname, 'public/image')));
 
 // ✅ CORS Configuration
 const allowedOrigins = [
