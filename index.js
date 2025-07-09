@@ -209,14 +209,16 @@ const __dirname = dirname(__filename);
 
 
 
-// 👇 This line serves static files from public folder
-app.use('/image', express.static(path.join(__dirname, 'public/image')));
 
 // ✅ Load environment variables
 dotenv.config();
 
 // ✅ App setup
 const app = express();
+
+// 👇 This line serves static files from public folder
+app.use('/image', express.static(path.join(__dirname, 'public/image')));
+
 
 // ✅ CORS Configuration
 const allowedOrigins = [

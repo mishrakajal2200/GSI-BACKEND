@@ -3,7 +3,7 @@
 import mongoose from 'mongoose'; 
 import Product from '../models/Product.js';
 import ExcelJS from 'exceljs';
-import csv from 'csv-parser';
+
 // @desc    Create a new product
 // @route   POST /api/products
 // export const createProduct = async (req, res) => {
@@ -202,7 +202,7 @@ export const searchProducts = async (req, res) => {
 //   }
 // };
 
-import Product from "../models/productModel.js";
+
 
 export const createProduct = async (req, res) => {
   try {
