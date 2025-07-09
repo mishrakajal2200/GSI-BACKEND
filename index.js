@@ -225,6 +225,7 @@ const allowedOrigins = [
   'https://gsienterprises.com',
   'https://www.gsienterprises.com',
   'https://preeminent-begonia-54c21c.netlify.app',
+  "http://localhost:3000"
 ];
 
 const corsOptions = {
@@ -347,6 +348,8 @@ mongoose.connect(process.env.MONGO_URI, {
   console.log('✅ MongoDB connected');
   createAdmin();
 }).catch(err => console.error('❌ MongoDB connection error', err));
+
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
