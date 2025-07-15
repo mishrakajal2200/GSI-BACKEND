@@ -349,13 +349,7 @@ mongoose.connect(process.env.MONGO_URI, {
   createAdmin();
 }).catch(err => console.error('❌ MongoDB connection error', err));
 
-// ✅ Serve React Frontend in Production
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static('/var/www/gsienterprises.com'));
-app.get('*', (req, res) => {
-  res.sendFile(path.join('/var/www/gsienterprises.com', 'index.html'));
-});
-}
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
