@@ -199,49 +199,31 @@ export const getCart = async (req, res) => {
 //     res.status(500).json({ message: "Error adding to cart" });
 //   }
 // };
-export const addToCart = async (req, res) => {
+export const addToCart = async (item) => {
   try {
-    const userId = req.user._id;
-    const { productId, quantity } = req.body;
+    const token = localStorage.getItem("token");
+    if (!token) return;
 
-    console.log("User:", userId);
-    console.log("Product ID:", productId);
-    console.log("Quantity:", quantity);
+    const { productId, quantity } = item;
 
-    if (!mongoose.Types.ObjectId.isValid(productId)) {
-      return res.status(400).json({ message: "Invalid product ID" });
-    }
-
-    const user = await User.findById(userId);
-    const product = await Product.findById(productId);
-
-    if (!user) return res.status(404).json({ message: "User not found" });
-    if (!product) return res.status(404).json({ message: "Product not found" });
-
-    const cartItemIndex = user.cart.findIndex(
-      (item) => item.productId.toString() === productId
+    await axios.post(
+      "https://api.gsienterprises.com/api/cart/add",
+      { productId, quantity },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      }
     );
 
-    if (cartItemIndex !== -1) {
-      user.cart[cartItemIndex].quantity += quantity;
-    } else {
-      user.cart.push({
-        productId,
-        name: product.name,
-        image: product.images?.[0],
-        price: product.price,
-        quantity,
-      });
-    }
-
-    await user.save();
-    res.status(200).json({ message: "Product added to cart", cart: user.cart });
-
+    // ✅ Wait for cart to be refreshed
+    await fetchCartData();  
   } catch (err) {
-    console.error("Error in addToCart:", err.message);
-    res.status(500).json({ message: "Error adding to cart", error: err.message });
+    console.error("Error adding to cart:", err.response?.data || err.message);
   }
 };
+
 
 
 export const updateQuantity = async (req, res) => {
