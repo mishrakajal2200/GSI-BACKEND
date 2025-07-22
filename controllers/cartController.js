@@ -158,48 +158,83 @@ export const getCart = async (req, res) => {
 };
 
 
-export const addToCart = async (req, res) => {
-  const { productId, quantity = 1, selectedColor, size, cartImage } = req.body;
+// export const addToCart = async (req, res) => {
+//   const { productId, quantity = 1, selectedColor, size, cartImage } = req.body;
 
+//   try {
+//     const product = await Product.findById(productId);
+//     if (!product) return res.status(404).json({ message: "Product not found" });
+
+//     let cart = await Cart.findOne({ userId: req.user._id });
+
+//     if (!cart) {
+//       cart = new Cart({ userId: req.user._id, items: [] });
+//     }
+
+//     const existingItem = cart.items.find(
+//       item => item.productId.toString() === productId && item.selectedColor === selectedColor && item.size === size
+//     );
+
+//     if (existingItem) {
+//       existingItem.quantity += quantity;
+//     } else {
+//       cart.items.push({
+//         productId,
+//         name: product.name,
+//         price: product.price,
+//         mrp: product.mrp,
+//         brand: product.brand,
+//         cartImage: product.images.front || product.images.side || product.images.back || "",
+//         images: product.images,
+//         selectedColor,
+//         size,
+//         cartImage,
+//         quantity,
+//       });
+//     }
+
+//     await cart.save();
+//     res.json(cart);
+//   } catch (err) {
+//     res.status(500).json({ message: "Error adding to cart" });
+//   }
+// };
+export const addToCart = async (req, res) => {
   try {
+    const userId = req.user._id; // Authenticated user
+    const { productId, quantity } = req.body;
+
+    const user = await User.findById(userId);
     const product = await Product.findById(productId);
+
     if (!product) return res.status(404).json({ message: "Product not found" });
 
-    let cart = await Cart.findOne({ userId: req.user._id });
-
-    if (!cart) {
-      cart = new Cart({ userId: req.user._id, items: [] });
-    }
-
-    const existingItem = cart.items.find(
-      item => item.productId.toString() === productId && item.selectedColor === selectedColor && item.size === size
+    // Check if product already in cart
+    const cartItemIndex = user.cart.findIndex(
+      (item) => item.productId.toString() === productId
     );
 
-    if (existingItem) {
-      existingItem.quantity += quantity;
+    if (cartItemIndex !== -1) {
+      // Product already in cart, increase quantity
+      user.cart[cartItemIndex].quantity += quantity;
     } else {
-      cart.items.push({
+      // Add new item
+      user.cart.push({
         productId,
         name: product.name,
+        image: product.images?.[0], // Use first image
         price: product.price,
-        mrp: product.mrp,
-        brand: product.brand,
-        cartImage: product.images.front || product.images.side || product.images.back || "",
-        images: product.images,
-        selectedColor,
-        size,
-        cartImage,
         quantity,
       });
     }
 
-    await cart.save();
-    res.json(cart);
+    await user.save();
+    res.status(200).json({ message: "Product added to cart", cart: user.cart });
   } catch (err) {
-    res.status(500).json({ message: "Error adding to cart" });
+    console.error("Error in addToCart:", err);
+    res.status(500).json({ message: "Error adding to cart", error: err.message });
   }
 };
-
 
 export const updateQuantity = async (req, res) => {
   const { productId, action, selectedColor, size } = req.body;
