@@ -201,28 +201,34 @@ export const getCart = async (req, res) => {
 // };
 export const addToCart = async (req, res) => {
   try {
-    const userId = req.user._id; // Authenticated user
+    const userId = req.user._id;
     const { productId, quantity } = req.body;
+
+    console.log("User:", userId);
+    console.log("Product ID:", productId);
+    console.log("Quantity:", quantity);
+
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+      return res.status(400).json({ message: "Invalid product ID" });
+    }
 
     const user = await User.findById(userId);
     const product = await Product.findById(productId);
 
+    if (!user) return res.status(404).json({ message: "User not found" });
     if (!product) return res.status(404).json({ message: "Product not found" });
 
-    // Check if product already in cart
     const cartItemIndex = user.cart.findIndex(
       (item) => item.productId.toString() === productId
     );
 
     if (cartItemIndex !== -1) {
-      // Product already in cart, increase quantity
       user.cart[cartItemIndex].quantity += quantity;
     } else {
-      // Add new item
       user.cart.push({
         productId,
         name: product.name,
-        image: product.images?.[0], // Use first image
+        image: product.images?.[0],
         price: product.price,
         quantity,
       });
@@ -230,11 +236,13 @@ export const addToCart = async (req, res) => {
 
     await user.save();
     res.status(200).json({ message: "Product added to cart", cart: user.cart });
+
   } catch (err) {
-    console.error("Error in addToCart:", err);
+    console.error("Error in addToCart:", err.message);
     res.status(500).json({ message: "Error adding to cart", error: err.message });
   }
 };
+
 
 export const updateQuantity = async (req, res) => {
   const { productId, action, selectedColor, size } = req.body;
