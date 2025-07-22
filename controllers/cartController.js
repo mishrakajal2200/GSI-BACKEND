@@ -1,5 +1,5 @@
 import User from '../models/User.js';
-import Product from '../models/Product.js';
+// import Product from '../models/Product.js';
 import Cart from '../models/Cart.js';
 // 📦 Get Cart Items
 
@@ -199,30 +199,45 @@ export const getCart = async (req, res) => {
 //     res.status(500).json({ message: "Error adding to cart" });
 //   }
 // };
-export const addToCart = async (item) => {
+
+export const addToCart = async (req, res) => {
   try {
-    const token = localStorage.getItem("token");
-    if (!token) return;
+    const userId = req.user._id;
+    const { productId, quantity } = req.body;
 
-    const { productId, quantity } = item;
+    if (!productId || !quantity) {
+      return res.status(400).json({ message: "Product ID and quantity are required" });
+    }
 
-    await axios.post(
-      "https://api.gsienterprises.com/api/cart/add",
-      { productId, quantity },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        withCredentials: true,
+    let userCart = await Cart.findOne({ userId });
+
+    // If no cart exists for the user, create a new one
+    if (!userCart) {
+      userCart = new Cart({
+        userId,
+        items: [{ productId, quantity }],
+      });
+    } else {
+      // Check if product already exists in cart
+      const itemIndex = userCart.items.findIndex(item => item.productId.toString() === productId);
+
+      if (itemIndex > -1) {
+        // If product exists, update quantity
+        userCart.items[itemIndex].quantity += quantity;
+      } else {
+        // If product does not exist, add new item
+        userCart.items.push({ productId, quantity });
       }
-    );
+    }
 
-    // ✅ Wait for cart to be refreshed
-    await fetchCartData();  
-  } catch (err) {
-    console.error("Error adding to cart:", err.response?.data || err.message);
+    await userCart.save();
+    res.status(200).json({ message: "Item added to cart", cart: userCart });
+  } catch (error) {
+    console.error("❌ Error in addToCart:", error.message);
+    res.status(500).json({ message: "Error adding to cart" });
   }
 };
+
 
 
 
