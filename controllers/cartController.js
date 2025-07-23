@@ -148,14 +148,35 @@ export const cleanCart = async (req, res) => {
 // };
 
  
+// export const getCart = async (req, res) => {
+//   try {
+//     const cart = await Cart.findOne({ userId: req.user._id }).populate("items.productId"); // ✅ Populate full product data
+//     res.json(cart || { items: [] });
+//   } catch (err) {
+//     res.status(500).json({ message: "Error fetching cart" });
+//   }
+// };
 export const getCart = async (req, res) => {
   try {
-    const cart = await Cart.findOne({ userId: req.user._id }).populate("items.productId"); // ✅ Populate full product data
-    res.json(cart || { items: [] });
+    const cart = await Cart.findOne({ userId: req.user._id }).populate("items.productId");
+
+    if (!cart) {
+      return res.json({ items: [] });
+    }
+
+    // Reshape response: separate product and quantity
+    const items = cart.items.map((item) => ({
+      product: item.productId,
+      quantity: item.quantity,
+    }));
+
+    res.json({ items });
   } catch (err) {
+    console.error("Error fetching cart:", err.message);
     res.status(500).json({ message: "Error fetching cart" });
   }
 };
+
 
 
 // export const addToCart = async (req, res) => {
