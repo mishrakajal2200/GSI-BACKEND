@@ -362,6 +362,7 @@ export const increaseQuantity = async (req, res) => {
 // 🔽 Decrease Quantity
 export const decreaseQuantity = async (req, res) => {
   const { productId } = req.params;
+  const { size, color } = req.body;
 
   try {
     const cart = await Cart.findOne({ userId: req.user._id }).populate('items.productId');
@@ -370,8 +371,12 @@ export const decreaseQuantity = async (req, res) => {
       return res.status(404).json({ message: "Cart not found" });
     }
 
+    // Match the exact product with its variant (size + color)
     const item = cart.items.find(
-      (item) => item.productId._id.toString() === productId
+      (item) =>
+        item.productId._id.toString() === productId &&
+        item.size === size &&
+        item.color === color
     );
 
     if (!item) {
@@ -386,6 +391,7 @@ export const decreaseQuantity = async (req, res) => {
 
     await cart.save();
 
+    // Send back updated cart items
     res.status(200).json({
       message: "Quantity decreased",
       cart: cart.items.map((item) => ({
@@ -393,6 +399,8 @@ export const decreaseQuantity = async (req, res) => {
         name: item.productId.name,
         price: item.productId.price,
         image: item.productId.image,
+        size: item.size,
+        color: item.color,
         quantity: item.quantity,
       })),
     });
@@ -401,6 +409,7 @@ export const decreaseQuantity = async (req, res) => {
     res.status(500).json({ message: "Error decreasing quantity" });
   }
 };
+
 
 
 // ❌ Remove Item from Cart
