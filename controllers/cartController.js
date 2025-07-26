@@ -442,12 +442,13 @@ export const removeFromCart = async (req, res) => {
     );
 
     await cart.save();
-   res.json({ message: "Item removed", items: cart.items });
+    res.json({ message: "Item removed", cart }); // ✅ send full updated cart
   } catch (err) {
     console.error("Error removing from cart:", err);
     res.status(500).json({ message: "Error removing from cart" });
   }
 };
+
 
 
 
