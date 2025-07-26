@@ -279,47 +279,82 @@ export const updateQuantity = async (req, res) => {
 
 
 // 🔼 Increase Quantity
+// export const increaseQuantity = async (req, res) => {
+//   const { productId } = req.params;
+//   console.log("⬆️ Increase route hit", req.params.productId);
+//   const user = await User.findById(req.user._id);
+//   if (!user) return res.status(404).json({ message: "User not found" });
+//   if (!Array.isArray(user.cart)) user.cart = [];
+
+//   const item = user.cart.find(
+//     (item) => item.productId?.toString() === productId
+//   );
+
+//   if (item) {
+//     item.quantity += 1;
+//     await user.save();
+
+//     // ✅ Re-fetch user with populated product details
+//     const updatedUser = await User.findById(req.user._id).populate({
+//       path: 'cart.productId',
+//       select: 'name price image',
+//     });
+
+//     const cartItems = updatedUser.cart.map(item => {
+//       if (
+//         item.productId &&
+//         item.productId._id &&
+//         mongoose.Types.ObjectId.isValid(item.productId._id)
+//       ) {
+//         return {
+//           productId: item.productId._id,
+//           name: item.productId.name,
+//           price: item.productId.price,
+//           image: item.productId.image,
+//           quantity: item.quantity,
+//         };
+//       }
+//       return null;
+//     }).filter(Boolean);
+
+//     res.status(200).json({ cart: cartItems });
+//   } else {
+//     res.status(404).json({ message: 'Item not found' });
+//   }
+// };
 export const increaseQuantity = async (req, res) => {
   const { productId } = req.params;
-  console.log("⬆️ Increase route hit", req.params.productId);
-  const user = await User.findById(req.user._id);
-  if (!user) return res.status(404).json({ message: "User not found" });
-  if (!Array.isArray(user.cart)) user.cart = [];
 
-  const item = user.cart.find(
-    (item) => item.productId?.toString() === productId
-  );
+  try {
+    const cart = await Cart.findOne({ userId: req.user._id }).populate('items.productId');
 
-  if (item) {
+    if (!cart) return res.status(404).json({ message: "Cart not found" });
+
+    const item = cart.items.find(
+      (item) => item.productId._id.toString() === productId
+    );
+
+    if (!item) {
+      return res.status(404).json({ message: "Item not found in cart" });
+    }
+
     item.quantity += 1;
-    await user.save();
 
-    // ✅ Re-fetch user with populated product details
-    const updatedUser = await User.findById(req.user._id).populate({
-      path: 'cart.productId',
-      select: 'name price image',
+    await cart.save();
+
+    res.status(200).json({
+      message: "Quantity increased",
+      cart: cart.items.map((item) => ({
+        productId: item.productId._id,
+        name: item.productId.name,
+        price: item.productId.price,
+        image: item.productId.image,
+        quantity: item.quantity,
+      })),
     });
-
-    const cartItems = updatedUser.cart.map(item => {
-      if (
-        item.productId &&
-        item.productId._id &&
-        mongoose.Types.ObjectId.isValid(item.productId._id)
-      ) {
-        return {
-          productId: item.productId._id,
-          name: item.productId.name,
-          price: item.productId.price,
-          image: item.productId.image,
-          quantity: item.quantity,
-        };
-      }
-      return null;
-    }).filter(Boolean);
-
-    res.status(200).json({ cart: cartItems });
-  } else {
-    res.status(404).json({ message: 'Item not found' });
+  } catch (err) {
+    console.error("Error increasing quantity:", err);
+    res.status(500).json({ message: "Error increasing quantity" });
   }
 };
 
