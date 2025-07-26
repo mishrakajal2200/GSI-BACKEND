@@ -429,21 +429,26 @@ export const decreaseQuantity = async (req, res) => {
 // };
 
 export const removeFromCart = async (req, res) => {
-  const { productId, selectedColor, size } = req.body;
+  const { productId } = req.params;
+
   try {
     const cart = await Cart.findOne({ userId: req.user._id });
-    if (!cart) return res.status(404).json({ message: "Cart not found" });
+    if (!cart) {
+      return res.status(404).json({ message: "Cart not found" });
+    }
 
     cart.items = cart.items.filter(
-      item => !(item.productId.toString() === productId && item.selectedColor === selectedColor && item.size === size)
+      (item) => item.productId.toString() !== productId
     );
 
     await cart.save();
-    res.json(cart);
+    res.json({ message: "Item removed from cart", cart });
   } catch (err) {
+    console.error("Error removing from cart:", err);
     res.status(500).json({ message: "Error removing from cart" });
   }
 };
+
 
 
 // 🧹 Clear Entire Cart
