@@ -177,8 +177,6 @@ export const getCart = async (req, res) => {
   }
 };
 
-
-
 // export const addToCart = async (req, res) => {
 //   const { productId, quantity = 1, selectedColor, size, cartImage } = req.body;
 
@@ -259,9 +257,6 @@ export const addToCart = async (req, res) => {
   }
 };
 
-
-
-
 export const updateQuantity = async (req, res) => {
   const { productId, action, selectedColor, size } = req.body;
   try {
@@ -286,6 +281,7 @@ export const updateQuantity = async (req, res) => {
 // 🔼 Increase Quantity
 export const increaseQuantity = async (req, res) => {
   const { productId } = req.params;
+  console.log("⬆️ Increase route hit", req.params.productId);
   const user = await User.findById(req.user._id);
   if (!user) return res.status(404).json({ message: "User not found" });
   if (!Array.isArray(user.cart)) user.cart = [];
