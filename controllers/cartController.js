@@ -322,6 +322,41 @@ export const updateQuantity = async (req, res) => {
 //     res.status(404).json({ message: 'Item not found' });
 //   }
 // };
+// export const increaseQuantity = async (req, res) => {
+//   const { productId } = req.params;
+
+//   try {
+//     const cart = await Cart.findOne({ userId: req.user._id }).populate('items.productId');
+
+//     if (!cart) return res.status(404).json({ message: "Cart not found" });
+
+//     const item = cart.items.find(
+//       (item) => item.productId._id.toString() === productId
+//     );
+
+//     if (!item) {
+//       return res.status(404).json({ message: "Item not found in cart" });
+//     }
+
+//     item.quantity += 1;
+
+//     await cart.save();
+
+//     res.status(200).json({
+//       message: "Quantity increased",
+//       cart: cart.items.map((item) => ({
+//         productId: item.productId._id,
+//         name: item.productId.name,
+//         price: item.productId.price,
+//         image: item.productId.image,
+//         quantity: item.quantity,
+//       })),
+//     });
+//   } catch (err) {
+//     console.error("Error increasing quantity:", err);
+//     res.status(500).json({ message: "Error increasing quantity" });
+//   }
+// };
 export const increaseQuantity = async (req, res) => {
   const { productId } = req.params;
 
@@ -331,7 +366,7 @@ export const increaseQuantity = async (req, res) => {
     if (!cart) return res.status(404).json({ message: "Cart not found" });
 
     const item = cart.items.find(
-      (item) => item.productId._id.toString() === productId
+      (item) => item.productId && item.productId._id.toString() === productId
     );
 
     if (!item) {
@@ -339,18 +374,22 @@ export const increaseQuantity = async (req, res) => {
     }
 
     item.quantity += 1;
-
     await cart.save();
+
+    // ✅ Re-fetch updated cart with populated productId
+    const updatedCart = await Cart.findOne({ userId: req.user._id }).populate('items.productId');
 
     res.status(200).json({
       message: "Quantity increased",
-      cart: cart.items.map((item) => ({
-        productId: item.productId._id,
-        name: item.productId.name,
-        price: item.productId.price,
-        image: item.productId.image,
-        quantity: item.quantity,
-      })),
+      cart: updatedCart.items.map((item) => ({
+        product: {
+          _id: item.productId._id,
+          name: item.productId.name,
+          price: item.productId.price,
+          image: item.productId.image
+        },
+        quantity: item.quantity
+      }))
     });
   } catch (err) {
     console.error("Error increasing quantity:", err);
@@ -504,21 +543,56 @@ export const decreaseQuantity = async (req, res) => {
 //   }
 // };
 
+// export const removeFromCart = async (req, res) => {
+//   const { productId } = req.params;
+
+//   try {
+//     const cart = await Cart.findOne({ userId: req.user._id });
+//     if (!cart) {
+//       return res.status(404).json({ message: "Cart not found" });
+//     }
+
+//     cart.items = cart.items.filter(
+//       (item) => item.productId.toString() !== productId
+//     );
+
+//     await cart.save();
+//     res.json({ message: "Item removed", cart }); // ✅ send full updated cart
+//   } catch (err) {
+//     console.error("Error removing from cart:", err);
+//     res.status(500).json({ message: "Error removing from cart" });
+//   }
+// };
 export const removeFromCart = async (req, res) => {
   const { productId } = req.params;
 
   try {
-    const cart = await Cart.findOne({ userId: req.user._id });
+    const cart = await Cart.findOne({ userId: req.user._id }).populate('items.productId');
     if (!cart) {
       return res.status(404).json({ message: "Cart not found" });
     }
 
     cart.items = cart.items.filter(
-      (item) => item.productId.toString() !== productId
+      (item) => item.productId && item.productId._id.toString() !== productId
     );
 
     await cart.save();
-    res.json({ message: "Item removed", cart }); // ✅ send full updated cart
+
+    // ✅ Re-fetch updated cart with populated productId
+    const updatedCart = await Cart.findOne({ userId: req.user._id }).populate('items.productId');
+
+    res.status(200).json({
+      message: "Item removed",
+      cart: updatedCart.items.map((item) => ({
+        product: {
+          _id: item.productId._id,
+          name: item.productId.name,
+          price: item.productId.price,
+          image: item.productId.image
+        },
+        quantity: item.quantity
+      }))
+    });
   } catch (err) {
     console.error("Error removing from cart:", err);
     res.status(500).json({ message: "Error removing from cart" });
