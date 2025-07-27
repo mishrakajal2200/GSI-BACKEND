@@ -360,28 +360,68 @@ export const increaseQuantity = async (req, res) => {
 
 
 // 🔽 Decrease Quantity
+// export const decreaseQuantity = async (req, res) => {
+//   const { productId } = req.params;
+//   const { size, color } = req.body;
+
+//   try {
+//     const cart = await Cart.findOne({ userId: req.user._id }).populate('items.productId');
+
+//     if (!cart) {
+//       return res.status(404).json({ message: "Cart not found" });
+//     }
+
+//     // Match the exact product with its variant (size + color)
+//     const item = cart.items.find(
+//       (item) =>
+//         item.productId._id.toString() === productId &&
+//         item.size === size &&
+//         item.color === color
+//     );
+
+//     if (!item) {
+//       return res.status(404).json({ message: "Item not found in cart" });
+//     }
+
+//     if (item.quantity > 1) {
+//       item.quantity -= 1;
+//     } else {
+//       return res.status(400).json({ message: "Quantity cannot be less than 1" });
+//     }
+
+//     await cart.save();
+
+//     // Send back updated cart items
+//     res.status(200).json({
+//       message: "Quantity decreased",
+//       cart: cart.items.map((item) => ({
+//         productId: item.productId._id,
+//         name: item.productId.name,
+//         price: item.productId.price,
+//         image: item.productId.image,
+//         size: item.size,
+//         color: item.color,
+//         quantity: item.quantity,
+//       })),
+//     });
+//   } catch (err) {
+//     console.error("Error decreasing quantity:", err);
+//     res.status(500).json({ message: "Error decreasing quantity" });
+//   }
+// };
 export const decreaseQuantity = async (req, res) => {
   const { productId } = req.params;
-  const { size, color } = req.body;
 
   try {
     const cart = await Cart.findOne({ userId: req.user._id }).populate('items.productId');
 
-    if (!cart) {
-      return res.status(404).json({ message: "Cart not found" });
-    }
+    if (!cart) return res.status(404).json({ message: "Cart not found" });
 
-    // Match the exact product with its variant (size + color)
     const item = cart.items.find(
-      (item) =>
-        item.productId._id.toString() === productId &&
-        item.size === size &&
-        item.color === color
+      (item) => item.productId._id.toString() === productId
     );
 
-    if (!item) {
-      return res.status(404).json({ message: "Item not found in cart" });
-    }
+    if (!item) return res.status(404).json({ message: "Item not found in cart" });
 
     if (item.quantity > 1) {
       item.quantity -= 1;
@@ -391,18 +431,20 @@ export const decreaseQuantity = async (req, res) => {
 
     await cart.save();
 
-    // Send back updated cart items
+    // ✅ Send cart with full product structure
+    const updatedCart = await Cart.findOne({ userId: req.user._id }).populate('items.productId');
+
     res.status(200).json({
       message: "Quantity decreased",
-      cart: cart.items.map((item) => ({
-        productId: item.productId._id,
-        name: item.productId.name,
-        price: item.productId.price,
-        image: item.productId.image,
-        size: item.size,
-        color: item.color,
-        quantity: item.quantity,
-      })),
+      cart: updatedCart.items.map((item) => ({
+        product: {
+          _id: item.productId._id,
+          name: item.productId.name,
+          price: item.productId.price,
+          image: item.productId.image
+        },
+        quantity: item.quantity
+      }))
     });
   } catch (err) {
     console.error("Error decreasing quantity:", err);
