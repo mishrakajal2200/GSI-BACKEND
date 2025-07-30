@@ -119,37 +119,43 @@ export const placeCODOrder = async (req, res) => {
       });
     }
 
-    // 2) Destructure shipping address fields
-    const { fullName, phone, address, city, country, postalCode } = shippingAddress;
+    // 2) Destructure shipping fields
+    const { fullName, phone, address, city, country, postalCode } =
+      shippingAddress;
 
-    // 3) Debugging logs
+    // 3) Log for debugging
     console.log("👉 Received shippingAddress:", shippingAddress);
-    console.log("🛒 Received items:", items);
-    console.log("💰 Total Price:", totalPrice);
-    console.log("📦 Payment Method:", paymentMethod);
-    console.log("🧑 User from token:", req.user);
 
-    // 4) Validate shipping fields
+    // 4) Field validation
     if (!fullName?.trim()) {
-      return res.status(400).json({ success: false, message: "Full name is required." });
+      return res
+        .status(400)
+        .json({ success: false, message: "Full name is required." });
     }
 
     const phoneRegex = /^[\d\-\+\(\)\s]{10,15}$/;
     if (!phone || !phoneRegex.test(phone)) {
-      return res.status(400).json({ success: false, message: "Invalid phone number." });
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid phone number." });
     }
 
     if (!address?.trim()) {
-      return res.status(400).json({ success: false, message: "Address is required." });
+      return res
+        .status(400)
+        .json({ success: false, message: "Address is required." });
     }
     if (!city?.trim()) {
-      return res.status(400).json({ success: false, message: "City is required." });
+      return res
+        .status(400)
+        .json({ success: false, message: "City is required." });
     }
     if (!country?.trim()) {
-      return res.status(400).json({ success: false, message: "Country is required." });
+      return res
+        .status(400)
+        .json({ success: false, message: "Country is required." });
     }
 
-    // 5) Postal code validation
     const pinRegex = /^[0-9]{6}$/;
     if (!postalCode || !pinRegex.test(postalCode)) {
       return res.status(400).json({
@@ -158,21 +164,17 @@ export const placeCODOrder = async (req, res) => {
       });
     }
 
-    // 6) Check if user is authenticated
-    if (!req.user || !req.user._id) {
-      return res.status(401).json({
-        success: false,
-        message: "Unauthorized. Please login again.",
-      });
-    }
+    // ✅ Map items correctly according to schema
+    const formattedItems = items.map((item) => ({
+      productId: item.product._id || item.productId,
+      name: item.product.name,
+      price: item.product.price,
+      quantity: item.quantity,
+    }));
 
-    // 7) Create & save the order
     const newOrder = new Order({
       user: req.user._id,
-      items: items.map(item => ({
-        product: item.product._id || item.product, // Ensure we only store ObjectId
-        quantity: item.quantity,
-      })),
+      items: formattedItems,
       shippingAddress: {
         fullName,
         phone,
@@ -183,24 +185,19 @@ export const placeCODOrder = async (req, res) => {
       },
       totalPrice,
       paymentMethod,
-      isPaid: false, // COD: payment happens on delivery
+      isPaid: false,
     });
-
-    console.log("📤 Order to be saved:", newOrder);
 
     const savedOrder = await newOrder.save();
-
     return res.status(201).json({ success: true, order: savedOrder });
-
   } catch (error) {
-    console.error("❌ Error placing COD order:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Internal Server Error",
-      error: error.message, // Include detailed error for debugging
-    });
+    console.error("Error placing COD order:", error);
+    return res
+      .status(500)
+      .json({ success: false, message: "Internal Server Error", error: error.message });
   }
 };
+
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
