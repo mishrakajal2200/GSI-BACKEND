@@ -54,6 +54,6 @@ router.delete(
   deleteProduct
 );
 
-router.post('/generate-quotation', authenticateUser, isAdmin, generateQuotation);
+
 
 export default router;
