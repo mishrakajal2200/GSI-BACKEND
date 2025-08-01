@@ -202,6 +202,7 @@ import shopRoutes from './routes/shopRoutes.js';
 import filtersRoutes from './routes/filtersRoutes.js';
 import payment from './routes/payment.js';
 import adminRoutes from './routes/adminRoutes.js';
+import pdfRoutes from './routes/pdfRoutes.js';
 
 // ✅ Path setup
 const __filename = fileURLToPath(import.meta.url);
@@ -317,7 +318,7 @@ app.use('/api/nearby', shopRoutes);
 app.use('/api/filters', filtersRoutes);
 app.use('/api/payment', payment);
 app.use('/api/admin', adminRoutes);
-app.use('/api/pdf',productRoutes);
+app.use('/api/pdf',pdfRoutes);
 
 // ✅ Create Admin User (optional)
 const createAdmin = async () => {
