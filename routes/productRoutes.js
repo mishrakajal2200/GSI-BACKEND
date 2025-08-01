@@ -11,14 +11,22 @@ import {
   importProducts     
 
 } from '../controllers/ProductController.js';
-import upload from "../middleware/upload.js";
+
+import { multiUpload } from "../middleware/upload.js";
 
 import  { authenticateUser,isAdmin } from "../middleware/authMiddleware.js";
 import {uploadCsv} from '../middleware/uploadCsv.js';
 const router = express.Router();
 
 
-router.post("/adminroutes/create",authenticateUser,isAdmin, upload.single("image"), createProduct);
+// router.post("/adminroutes/create",authenticateUser,isAdmin, upload.array("image",4), createProduct);
+router.post(
+  "/adminroutes/create",
+  authenticateUser,
+  isAdmin,
+  multiUpload,
+  createProduct
+);
 
 // Get all products (with filtering, sorting, pagination)
 router.get('/products', getAllProducts);

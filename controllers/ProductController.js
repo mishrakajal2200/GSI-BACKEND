@@ -204,10 +204,81 @@ export const searchProducts = async (req, res) => {
 
 
 
+// export const createProduct = async (req, res) => {
+//   try {
+//     console.log("🧾 Incoming form data:", req.body);
+//     console.log("🖼️ Uploaded files:", req.files); // multiple images
+
+//     const {
+//       name,
+//       brand,
+//       mainCategory,
+//       subCategory,
+//       subSubCategory,
+//       description,
+//       mrp,
+//       variants, // this is expected to be JSON string
+//     } = req.body;
+
+//     if (!name || !brand || !mrp || !variants) {
+//       return res.status(400).json({
+//         error: "Please provide name, brand, MRP, and variants",
+//       });
+//     }
+
+//     // Parse variants from JSON string to object
+//     let parsedVariants;
+//     try {
+//       parsedVariants = JSON.parse(variants);
+//     } catch (error) {
+//       return res.status(400).json({ error: "Invalid variants JSON" });
+//     }
+
+//     // Attach uploaded image paths to each variant
+//     if (req.files && req.files.length > 0) {
+//       let fileIndex = 0;
+//       parsedVariants = parsedVariants.map((variant) => {
+//         const imageCount = variant.imageCount || 1;
+//         const images = [];
+
+//         for (let i = 0; i < imageCount && fileIndex < req.files.length; i++) {
+//           images.push(`/uploads/${req.files[fileIndex].filename}`);
+//           fileIndex++;
+//         }
+
+//         return {
+//           ...variant,
+//           images,
+//         };
+//       });
+//     }
+
+//     const product = new Product({
+//       name,
+//       brand,
+//       mainCategory: mainCategory || "",
+//       subCategory: subCategory || "",
+//       subSubCategory: subSubCategory || "",
+//       description: description || "",
+//       mrp,
+//       variants: parsedVariants,
+//     });
+
+//     const savedProduct = await product.save();
+
+//     res.status(201).json({
+//       message: "✅ Product created successfully",
+//       product: savedProduct,
+//     });
+//   } catch (error) {
+//     console.error("❌ Error in createProduct:", error);
+//     res.status(500).json({ error: error.message || "Server error" });
+//   }
+// };
 export const createProduct = async (req, res) => {
   try {
     console.log("🧾 Incoming form data:", req.body);
-    console.log("🖼️ Uploaded files:", req.files); // multiple images
+    console.log("🖼️ Uploaded files:", req.files);
 
     const {
       name,
@@ -217,40 +288,25 @@ export const createProduct = async (req, res) => {
       subSubCategory,
       description,
       mrp,
-      variants, // this is expected to be JSON string
+      price
     } = req.body;
 
-    if (!name || !brand || !mrp || !variants) {
+    if (!name || !brand || !mrp || !price) {
       return res.status(400).json({
-        error: "Please provide name, brand, MRP, and variants",
+        error: "Please provide name, brand, MRP, and price",
       });
     }
 
-    // Parse variants from JSON string to object
-    let parsedVariants;
-    try {
-      parsedVariants = JSON.parse(variants);
-    } catch (error) {
-      return res.status(400).json({ error: "Invalid variants JSON" });
+    // Handle main image
+    let mainImage = "";
+    if (req.files['image'] && req.files['image'][0]) {
+      mainImage = `/uploads/${req.files['image'][0].filename}`;
     }
 
-    // Attach uploaded image paths to each variant
-    if (req.files && req.files.length > 0) {
-      let fileIndex = 0;
-      parsedVariants = parsedVariants.map((variant) => {
-        const imageCount = variant.imageCount || 1;
-        const images = [];
-
-        for (let i = 0; i < imageCount && fileIndex < req.files.length; i++) {
-          images.push(`/uploads/${req.files[fileIndex].filename}`);
-          fileIndex++;
-        }
-
-        return {
-          ...variant,
-          images,
-        };
-      });
+    // Handle additional images
+    let additionalImages = [];
+    if (req.files['images']) {
+      additionalImages = req.files['images'].map((file) => `/uploads/${file.filename}`);
     }
 
     const product = new Product({
@@ -261,7 +317,9 @@ export const createProduct = async (req, res) => {
       subSubCategory: subSubCategory || "",
       description: description || "",
       mrp,
-      variants: parsedVariants,
+      price,
+      mainImage,
+      additionalImages,
     });
 
     const savedProduct = await product.save();
