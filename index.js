@@ -316,6 +316,7 @@ app.use('/api/nearby', shopRoutes);
 app.use('/api/filters', filtersRoutes);
 app.use('/api/payment', payment);
 app.use('/api/admin', adminRoutes);
+app.use('/api/pdf',productRoutes);
 
 // ✅ Create Admin User (optional)
 const createAdmin = async () => {

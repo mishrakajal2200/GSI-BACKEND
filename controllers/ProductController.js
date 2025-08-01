@@ -3,6 +3,15 @@
 import mongoose from 'mongoose'; 
 import Product from '../models/Product.js';
 import ExcelJS from 'exceljs';
+import PDFDocument from 'pdfkit';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+// ES module workaround to get __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // @desc    Create a new product
 // @route   POST /api/products
@@ -334,6 +343,57 @@ export const createProduct = async (req, res) => {
   }
 };
 
+
+export const generateQuotation = async (req, res) => {
+  try {
+    const product = req.body; // Expect name, brand, price, etc.
+
+    const doc = new PDFDocument();
+    const fileName = `Quotation-${Date.now()}.pdf`;
+    const quotationsDir = path.join(__dirname, '../quotations');
+
+    // Make sure quotations folder exists
+    if (!fs.existsSync(quotationsDir)) {
+      fs.mkdirSync(quotationsDir);
+    }
+
+    const filePath = path.join(quotationsDir, fileName);
+    doc.pipe(fs.createWriteStream(filePath));
+
+    // --- PDF Content ---
+    doc.fontSize(20).text('🧾 Product Quotation', { align: 'center' });
+    doc.moveDown();
+
+    doc.fontSize(12).text(`Product: ${product.name}`);
+    doc.text(`Brand: ${product.brand}`);
+    doc.text(`Category: ${product.mainCategory} / ${product.subCategory}`);
+    doc.text(`Price: ₹${product.price}`);
+    doc.text(`Description: ${product.description}`);
+    
+    doc.moveDown();
+    doc.fontSize(14).text('🏦 Bank Details:');
+    doc.fontSize(12).text(`Account Name: GSI Enterprises`);
+    doc.text(`Account Number: 123456789012`);
+    doc.text(`IFSC: SBIN0001234`);
+    doc.text(`Bank: State Bank of India`);
+
+    doc.end();
+
+    doc.on('finish', () => {
+      res.download(filePath, fileName, (err) => {
+        if (err) {
+          console.error('❌ Download error:', err);
+          res.status(500).json({ error: 'Download failed' });
+        } else {
+          fs.unlinkSync(filePath); // Optional: Delete after download
+        }
+      });
+    });
+  } catch (error) {
+    console.error('❌ Error generating quotation:', error);
+    res.status(500).json({ error: error.message });
+  }
+};
 
 // export workiing on admin 
 export const exportProducts = async (req, res) => {

@@ -8,7 +8,8 @@ import {
   deleteProduct,
   searchProducts, 
   exportProducts,
-  importProducts     
+  importProducts,
+  generateQuotation     
 
 } from '../controllers/ProductController.js';
 
@@ -52,5 +53,7 @@ router.delete(
   isAdmin,
   deleteProduct
 );
+
+router.post('/generate-quotation', authenticateUser, isAdmin, generateQuotation);
 
 export default router;
