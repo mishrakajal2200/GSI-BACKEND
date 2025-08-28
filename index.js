@@ -203,6 +203,7 @@ import filtersRoutes from './routes/filtersRoutes.js';
 import payment from './routes/payment.js';
 import adminRoutes from './routes/adminRoutes.js';
 import pdfRoutes from './routes/pdfRoutes.js';
+import quotationRoutes from "./routes/quotationRoutes.js";
 
 // ✅ Path setup
 const __filename = fileURLToPath(import.meta.url);
@@ -319,6 +320,7 @@ app.use('/api/filters', filtersRoutes);
 app.use('/api/payment', payment);
 app.use('/api/admin', adminRoutes);
 app.use('/api/pdf',pdfRoutes);
+app.use("/api/quotation", quotationRoutes);
 
 // ✅ Create Admin User (optional)
 const createAdmin = async () => {
