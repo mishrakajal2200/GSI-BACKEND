@@ -5,20 +5,35 @@ export const createQuotation = async (req, res) => {
   try {
     const { items, budget, specialNotes } = req.body;
 
+    // ✅ check if auth middleware worked
+    if (!req.user || !req.user._id) {
+      return res.status(401).json({ message: "Unauthorized: User not found" });
+    }
+
+    // ✅ validate items
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ message: "At least one item is required" });
+    }
+
+    // ✅ create new quotation
     const quotation = new Quotation({
-      customerId: req.user._id, // ensure you have auth middleware
+      customerId: req.user._id,
       items,
-      budget,
-      specialNotes
+      budget: budget || 0,
+      specialNotes: specialNotes || "",
     });
 
     await quotation.save();
-    res.status(201).json({ message: "Quotation request submitted", quotation });
+
+    res.status(201).json({
+      message: "Quotation request submitted successfully",
+      quotation,
+    });
   } catch (err) {
+    console.error("CreateQuotation Error:", err.message);
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
-
 // Admin: Get all quotations
 export const getAllQuotations = async (req, res) => {
   try {

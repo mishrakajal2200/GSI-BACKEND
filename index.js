@@ -3,6 +3,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
+import cookieParser from "cookie-parser";
 import dotenv from 'dotenv';
 import nodemailer from 'nodemailer';
 import bodyParser from 'body-parser';
@@ -38,6 +39,9 @@ dotenv.config();
 
 // ✅ App setup
 const app = express();
+app.use(express.json());
+app.use(cookieParser());
+
 
 // 👇 This line serves static files from public folder
 app.use('/image', express.static(path.join(__dirname, 'public/image')));
