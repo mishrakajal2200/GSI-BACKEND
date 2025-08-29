@@ -24,12 +24,9 @@ export const authenticateUser = async (req, res, next) => {
 
     // Find the user and exclude the password field
     const user = await User.findById(userId).select('-password');
-    // if (!user) {
-    //   return res.status(404).json({ message: 'User not found' });
-    // }
     if (!user) {
-  return res.status(401).json({ message: 'User not found or unauthorized' });
-}
+      return res.status(404).json({ message: 'User not found' });
+    }
 
     req.user = user; // Attach user to request
     next();
