@@ -47,7 +47,7 @@ router.put("/:id/accept", authenticateUser, acceptQuotation);
 router.put("/:id/reject", authenticateUser, rejectQuotation);
 
 // Admin
-router.get("/", authenticateUser, isAdmin, getAllQuotations); // with filters via query
+router.get("/all", authenticateUser, isAdmin, getAllQuotations); // with filters via query
 router.put("/:id/respond", authenticateUser, isAdmin, respondQuotation);
 
 export default router;
