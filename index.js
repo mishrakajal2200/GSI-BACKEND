@@ -145,7 +145,7 @@ app.use('/api/filters', filtersRoutes);
 app.use('/api/payment', payment);
 app.use('/api/admin', adminRoutes);
 app.use('/api/pdf',pdfRoutes);
-app.use("/api/quotation", quotationRoutes);
+app.use("/api/cart/quotation", quotationRoutes);
 
 // ✅ Create Admin User (optional)
 const createAdmin = async () => {
