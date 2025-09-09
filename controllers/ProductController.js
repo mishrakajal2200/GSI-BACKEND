@@ -485,13 +485,17 @@ export const exportProducts = async (req, res) => {
 export const importProducts = async (req, res) => {
   try {
     if (!req.file) {
-      return res.status(400).json({ error: "No file uploaded" });
+      return res.status(400).json({ error: "No file uploaded or wrong file type" });
     }
 
     const workbook = new ExcelJS.Workbook();
     await workbook.xlsx.load(req.file.buffer);
 
     const worksheet = workbook.worksheets[0];
+    if (!worksheet) {
+      return res.status(400).json({ error: "No worksheet found in Excel file" });
+    }
+
     const products = [];
 
     worksheet.eachRow((row, rowNumber) => {
@@ -526,10 +530,11 @@ export const importProducts = async (req, res) => {
       count: products.length,
     });
   } catch (error) {
-    console.error("Import error:", error); // 🔑 log full error, not just message
-    res.status(500).json({ error: "Failed to import products" });
+    console.error("Import error:", error.stack || error); // 🔑 log full error
+    res.status(500).json({ error: error.message || "Failed to import products" });
   }
 };
+
 
 
 
