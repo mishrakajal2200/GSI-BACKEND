@@ -433,10 +433,59 @@ export const exportProducts = async (req, res) => {
 };
 
 // import working on admin
+// export const importProducts = async (req, res) => {
+//   try {
+//     if (!req.file) {
+//       return res.status(400).json({ error: 'No file uploaded' });
+//     }
+
+//     const workbook = new ExcelJS.Workbook();
+//     await workbook.xlsx.load(req.file.buffer);
+
+//     const worksheet = workbook.worksheets[0];
+//     const products = [];
+
+//     worksheet.eachRow((row, rowNumber) => {
+//       if (rowNumber === 1) return; // skip headers
+
+//       const [
+//         name,
+//         brand,
+//         mainCategory,
+//         subCategory,
+//         subSubCategory,
+//         price,
+//         mrp,
+//         description
+//       ] = row.values.slice(1); // slice to remove Excel internal ID
+
+//       products.push({
+//         name,
+//         brand,
+//         mainCategory,
+//         subCategory,
+//         subSubCategory,
+//         price,
+//         mrp,
+//         description
+//       });
+//     });
+
+//     await Product.insertMany(products);
+//     res.status(200).json({
+//       message: 'Products imported successfully',
+//       count: products.length
+//     });
+//   } catch (error) {
+//     console.error('Import error:', error.message);
+//     res.status(500).json({ error: 'Failed to import products' });
+//   }
+// };
+
 export const importProducts = async (req, res) => {
   try {
     if (!req.file) {
-      return res.status(400).json({ error: 'No file uploaded' });
+      return res.status(400).json({ error: "No file uploaded" });
     }
 
     const workbook = new ExcelJS.Workbook();
@@ -456,8 +505,8 @@ export const importProducts = async (req, res) => {
         subSubCategory,
         price,
         mrp,
-        description
-      ] = row.values.slice(1); // slice to remove Excel internal ID
+        description,
+      ] = row.values.slice(1);
 
       products.push({
         name,
@@ -467,18 +516,18 @@ export const importProducts = async (req, res) => {
         subSubCategory,
         price,
         mrp,
-        description
+        description,
       });
     });
 
     await Product.insertMany(products);
     res.status(200).json({
-      message: 'Products imported successfully',
-      count: products.length
+      message: "Products imported successfully",
+      count: products.length,
     });
   } catch (error) {
-    console.error('Import error:', error.message);
-    res.status(500).json({ error: 'Failed to import products' });
+    console.error("Import error:", error); // 🔑 log full error, not just message
+    res.status(500).json({ error: "Failed to import products" });
   }
 };
 
