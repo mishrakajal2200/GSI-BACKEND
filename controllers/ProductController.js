@@ -484,6 +484,8 @@ export const exportProducts = async (req, res) => {
 
 export const importProducts = async (req, res) => {
   try {
+    console.log("File received:", req.file ? req.file.originalname : "❌ none");
+
     if (!req.file) {
       return res.status(400).json({ error: "No file uploaded or wrong file type" });
     }
@@ -500,7 +502,6 @@ export const importProducts = async (req, res) => {
 
     worksheet.eachRow((row, rowNumber) => {
       if (rowNumber === 1) return; // skip headers
-
       const [
         name,
         brand,
@@ -511,26 +512,17 @@ export const importProducts = async (req, res) => {
         mrp,
         description,
       ] = row.values.slice(1);
-
-      products.push({
-        name,
-        brand,
-        mainCategory,
-        subCategory,
-        subSubCategory,
-        price,
-        mrp,
-        description,
-      });
+      products.push({ name, brand, mainCategory, subCategory, subSubCategory, price, mrp, description });
     });
 
     await Product.insertMany(products);
+
     res.status(200).json({
       message: "Products imported successfully",
       count: products.length,
     });
   } catch (error) {
-    console.error("Import error:", error.stack || error); // 🔑 log full error
+    console.error("Import error:", error.stack || error);
     res.status(500).json({ error: error.message || "Failed to import products" });
   }
 };

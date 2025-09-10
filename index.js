@@ -179,6 +179,18 @@ mongoose.connect(process.env.MONGO_URI, {
   createAdmin();
 }).catch(err => console.error('❌ MongoDB connection error', err));
 
+// ✅ Global error handler
+app.use((err, req, res, next) => {
+  console.error("Global error:", err.message || err);
+
+  if (res.headersSent) {
+    return next(err);
+  }
+
+  res.status(500).json({
+    error: err.message || "Internal Server Error",
+  });
+});
 
 
 const PORT = process.env.PORT || 5000;
