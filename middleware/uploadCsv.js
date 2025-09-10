@@ -37,19 +37,17 @@
 
 
 
-import multer from "multer";
-
-const storage = multer.memoryStorage();
-
 export const uploadCsv = multer({
-  storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
+  storage: multer.memoryStorage(), // important since you use req.file.buffer
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB
+  },
   fileFilter: (req, file, cb) => {
     const allowedMimes = [
       "text/csv",
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       "application/vnd.ms-excel",
-      "application/octet-stream", // some browsers use this
+      "application/octet-stream", // some browsers use this for .xlsx
     ];
 
     if (allowedMimes.includes(file.mimetype)) {
