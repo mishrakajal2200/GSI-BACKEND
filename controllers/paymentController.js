@@ -107,11 +107,100 @@ export const getAllOrders = async (req, res) => {
 //     return res.status(500).json({ success: false, message: "Internal Server Error" });
 //   }
 // };
+// export const placeCODOrder = async (req, res) => {
+//   try {
+//     const { items, shippingAddress, totalPrice, paymentMethod } = req.body;
+
+//     // 1) Basic presence check
+//     if (!items || !shippingAddress || !totalPrice || !paymentMethod) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Missing one or more required fields.",
+//       });
+//     }
+
+//     // 2) Destructure shipping fields
+//     const { fullName, phone, address, city, country, postalCode } =
+//       shippingAddress;
+
+//     // 3) Log for debugging
+//     console.log("👉 Received shippingAddress:", shippingAddress);
+
+//     // 4) Field validation
+//     if (!fullName?.trim()) {
+//       return res
+//         .status(400)
+//         .json({ success: false, message: "Full name is required." });
+//     }
+
+//     const phoneRegex = /^[\d\-\+\(\)\s]{10,15}$/;
+//     if (!phone || !phoneRegex.test(phone)) {
+//       return res
+//         .status(400)
+//         .json({ success: false, message: "Invalid phone number." });
+//     }
+
+//     if (!address?.trim()) {
+//       return res
+//         .status(400)
+//         .json({ success: false, message: "Address is required." });
+//     }
+//     if (!city?.trim()) {
+//       return res
+//         .status(400)
+//         .json({ success: false, message: "City is required." });
+//     }
+//     if (!country?.trim()) {
+//       return res
+//         .status(400)
+//         .json({ success: false, message: "Country is required." });
+//     }
+
+//     const pinRegex = /^[0-9]{6}$/;
+//     if (!postalCode || !pinRegex.test(postalCode)) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Invalid postal code. Must be 6 digits.",
+//       });
+//     }
+
+//     // ✅ Map items correctly according to schema
+//     const formattedItems = items.map((item) => ({
+//       productId: item.product._id || item.productId,
+//       name: item.product.name,
+//       price: item.product.price,
+//       quantity: item.quantity,
+//     }));
+
+//     const newOrder = new Order({
+//       user: req.user._id,
+//       items: formattedItems,
+//       shippingAddress: {
+//         fullName,
+//         phone,
+//         address,
+//         city,
+//         country,
+//         postalCode,
+//       },
+//       totalPrice,
+//       paymentMethod,
+//       isPaid: false,
+//     });
+
+//     const savedOrder = await newOrder.save();
+//     return res.status(201).json({ success: true, order: savedOrder });
+//   } catch (error) {
+//     console.error("Error placing COD order:", error);
+//     return res
+//       .status(500)
+//       .json({ success: false, message: "Internal Server Error", error: error.message });
+//   }
+// };
 export const placeCODOrder = async (req, res) => {
   try {
     const { items, shippingAddress, totalPrice, paymentMethod } = req.body;
 
-    // 1) Basic presence check
     if (!items || !shippingAddress || !totalPrice || !paymentMethod) {
       return res.status(400).json({
         success: false,
@@ -119,41 +208,21 @@ export const placeCODOrder = async (req, res) => {
       });
     }
 
-    // 2) Destructure shipping fields
-    const { fullName, phone, address, city, country, postalCode } =
-      shippingAddress;
+    const { fullName, phone, address, city, country, postalCode } = shippingAddress;
 
-    // 3) Log for debugging
     console.log("👉 Received shippingAddress:", shippingAddress);
 
-    // 4) Field validation
     if (!fullName?.trim()) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Full name is required." });
+      return res.status(400).json({ success: false, message: "Full name is required." });
     }
 
     const phoneRegex = /^[\d\-\+\(\)\s]{10,15}$/;
     if (!phone || !phoneRegex.test(phone)) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Invalid phone number." });
+      return res.status(400).json({ success: false, message: "Invalid phone number." });
     }
 
-    if (!address?.trim()) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Address is required." });
-    }
-    if (!city?.trim()) {
-      return res
-        .status(400)
-        .json({ success: false, message: "City is required." });
-    }
-    if (!country?.trim()) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Country is required." });
+    if (!address?.trim() || !city?.trim() || !country?.trim()) {
+      return res.status(400).json({ success: false, message: "Address, city and country are required." });
     }
 
     const pinRegex = /^[0-9]{6}$/;
@@ -164,25 +233,22 @@ export const placeCODOrder = async (req, res) => {
       });
     }
 
-    // ✅ Map items correctly according to schema
+    if (!req.user?._id) {
+      return res.status(401).json({ success: false, message: "User not authenticated" });
+    }
+
+    // ✅ Fix mapping
     const formattedItems = items.map((item) => ({
-      productId: item.product._id || item.productId,
-      name: item.product.name,
-      price: item.product.price,
-      quantity: item.quantity,
+      productId: item.product?._id || item.productId || item._id,
+      name: item.product?.name || item.name,
+      price: item.product?.price || item.price,
+      quantity: item.quantity || item.qty,
     }));
 
     const newOrder = new Order({
       user: req.user._id,
       items: formattedItems,
-      shippingAddress: {
-        fullName,
-        phone,
-        address,
-        city,
-        country,
-        postalCode,
-      },
+      shippingAddress: { fullName, phone, address, city, country, postalCode },
       totalPrice,
       paymentMethod,
       isPaid: false,
@@ -192,9 +258,11 @@ export const placeCODOrder = async (req, res) => {
     return res.status(201).json({ success: true, order: savedOrder });
   } catch (error) {
     console.error("Error placing COD order:", error);
-    return res
-      .status(500)
-      .json({ success: false, message: "Internal Server Error", error: error.message });
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: error.message,
+    });
   }
 };
 
