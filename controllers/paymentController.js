@@ -201,6 +201,7 @@ export const placeCODOrder = async (req, res) => {
   try {
     const { items, shippingAddress, totalPrice, paymentMethod } = req.body;
 
+    // 🔒 Validate required fields
     if (!items || !shippingAddress || !totalPrice || !paymentMethod) {
       return res.status(400).json({
         success: false,
@@ -209,9 +210,9 @@ export const placeCODOrder = async (req, res) => {
     }
 
     const { fullName, phone, address, city, country, postalCode } = shippingAddress;
-
     console.log("👉 Received shippingAddress:", shippingAddress);
 
+    // 🛡️ Field-level validation
     if (!fullName?.trim()) {
       return res.status(400).json({ success: false, message: "Full name is required." });
     }
@@ -237,27 +238,29 @@ export const placeCODOrder = async (req, res) => {
       return res.status(401).json({ success: false, message: "User not authenticated" });
     }
 
-    // ✅ Fix mapping
+    // ✅ Format items according to schema
     const formattedItems = items.map((item) => ({
       productId: item.product?._id || item.productId || item._id,
       name: item.product?.name || item.name,
-      price: item.product?.price || item.price,
       quantity: item.quantity || item.qty,
+      priceAtOrder: item.product?.price || item.price, // 🔑 required field
     }));
 
+    // ✅ Create new order using correct schema fields
     const newOrder = new Order({
-      user: req.user._id,
+      customerId: req.user._id, // 🔑 schema expects customerId
       items: formattedItems,
       shippingAddress: { fullName, phone, address, city, country, postalCode },
-      totalPrice,
+      total: totalPrice,        // 🔑 schema expects "total"
       paymentMethod,
       isPaid: false,
     });
 
     const savedOrder = await newOrder.save();
+
     return res.status(201).json({ success: true, order: savedOrder });
   } catch (error) {
-    console.error("Error placing COD order:", error);
+    console.error("❌ Error placing COD order:", error);
     return res.status(500).json({
       success: false,
       message: "Internal Server Error",
