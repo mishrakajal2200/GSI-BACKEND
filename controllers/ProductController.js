@@ -365,20 +365,17 @@ export const createProduct = async (req, res) => {
       });
     }
 
-    // ✅ Build base URL dynamically
-    const baseUrl = `${req.protocol}://${req.get("host")}`;
-
     // Handle main image
-    let mainImage = "";
+    let image = "";
     if (req.files["image"] && req.files["image"][0]) {
-      mainImage = `${baseUrl}/uploads/${req.files["image"][0].filename}`;
+      image = `${req.protocol}://${req.get("host")}/uploads/${req.files["image"][0].filename}`;
     }
 
     // Handle additional images
-    let additionalImages = [];
+    let images = [];
     if (req.files["images"]) {
-      additionalImages = req.files["images"].map(
-        (file) => `${baseUrl}/uploads/${file.filename}`
+      images = req.files["images"].map(
+        (file) => `${req.protocol}://${req.get("host")}/uploads/${file.filename}`
       );
     }
 
@@ -391,8 +388,8 @@ export const createProduct = async (req, res) => {
       description: description || "",
       mrp,
       price,
-      mainImage,
-      additionalImages,
+      image,   // 👈 renamed to match UI + old products
+      images,  // 👈 renamed to match UI + old products
     });
 
     const savedProduct = await product.save();
