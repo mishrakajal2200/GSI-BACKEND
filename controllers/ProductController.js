@@ -356,7 +356,7 @@ export const createProduct = async (req, res) => {
       subSubCategory,
       description,
       mrp,
-      price
+      price,
     } = req.body;
 
     if (!name || !brand || !mrp || !price) {
@@ -388,8 +388,8 @@ export const createProduct = async (req, res) => {
       description: description || "",
       mrp,
       price,
-      image,   // 👈 renamed to match UI + old products
-      images,  // 👈 renamed to match UI + old products
+      image,   // ✅ single main image
+      images,  // ✅ array of images
     });
 
     const savedProduct = await product.save();
@@ -403,6 +403,7 @@ export const createProduct = async (req, res) => {
     res.status(500).json({ error: error.message || "Server error" });
   }
 };
+
 
 
 export const generateQuotation = async (req, res) => {
