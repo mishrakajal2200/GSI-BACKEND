@@ -27,6 +27,63 @@ const __dirname = dirname(__filename);
 // };
 
 
+// export const getAllProducts = async (req, res) => {
+//   try {
+//     const { brands, categories, sort, search } = req.query;
+
+//     const filter = {};
+
+//     // Brand filtering
+//     if (brands) {
+//       const brandArray = brands.split(',');
+//       filter.brand = { $in: brandArray };
+//     }
+
+//     // Category filtering
+//     if (categories) {
+//       const categoryArray = categories.split(',');
+//       filter.$or = [
+//         { mainCategory: { $in: categoryArray } },
+//         { subCategory: { $in: categoryArray } },
+//         { subSubCategory: { $in: categoryArray } }
+//       ];
+//     }
+
+//     // Search filtering (added here)
+//     if (search) {
+//       const searchRegex = new RegExp(search, 'i');
+//       const searchFilter = {
+//         $or: [
+//           { name: searchRegex },
+//           { brand: searchRegex },
+//           { mainCategory: searchRegex },
+//           { subCategory: searchRegex },
+//           { subSubCategory: searchRegex }
+//         ]
+//       };
+
+//       // Merge search filter with existing filter
+//       if (filter.$or) {
+//         // Merge both $or filters using $and
+//         filter.$and = [{ $or: filter.$or }, searchFilter];
+//         delete filter.$or;
+//       } else {
+//         Object.assign(filter, searchFilter);
+//       }
+//     }
+
+//     // Sorting
+//     let sortOption = {};
+//     if (sort === 'low') sortOption.price = 1;
+//     else if (sort === 'high') sortOption.price = -1;
+
+//     const products = await Product.find(filter).sort(sortOption);
+
+//     res.status(200).json(products);
+//   } catch (error) {
+//     res.status(500).json({ message: 'Server Error', error });
+//   }
+// };
 export const getAllProducts = async (req, res) => {
   try {
     const { brands, categories, sort, search } = req.query;
@@ -49,7 +106,7 @@ export const getAllProducts = async (req, res) => {
       ];
     }
 
-    // Search filtering (added here)
+    // Search filtering
     if (search) {
       const searchRegex = new RegExp(search, 'i');
       const searchFilter = {
@@ -62,9 +119,7 @@ export const getAllProducts = async (req, res) => {
         ]
       };
 
-      // Merge search filter with existing filter
       if (filter.$or) {
-        // Merge both $or filters using $and
         filter.$and = [{ $or: filter.$or }, searchFilter];
         delete filter.$or;
       } else {
@@ -79,11 +134,28 @@ export const getAllProducts = async (req, res) => {
 
     const products = await Product.find(filter).sort(sortOption);
 
-    res.status(200).json(products);
+    // ✅ Prepend full URL to images for all products
+    const host = `${req.protocol}://${req.get("host")}`;
+    const productsWithFullUrl = products.map(p => ({
+      ...p._doc,
+      image: p.image
+        ? p.image.startsWith('http')
+          ? p.image
+          : `${host}/uploads/${p.image.split('/').pop()}`
+        : null,
+      images: p.images
+        ? p.images.map(img =>
+            img.startsWith('http') ? img : `${host}/uploads/${img.split('/').pop()}`
+          )
+        : [],
+    }));
+
+    res.status(200).json(productsWithFullUrl);
   } catch (error) {
     res.status(500).json({ message: 'Server Error', error });
   }
 };
+
 
 
 export const getProductById = async (req, res) => {
