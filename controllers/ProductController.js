@@ -284,6 +284,65 @@ export const searchProducts = async (req, res) => {
 //     res.status(500).json({ error: error.message || "Server error" });
 //   }
 // };
+// export const createProduct = async (req, res) => {
+//   try {
+//     console.log("🧾 Incoming form data:", req.body);
+//     console.log("🖼️ Uploaded files:", req.files);
+
+//     const {
+//       name,
+//       brand,
+//       mainCategory,
+//       subCategory,
+//       subSubCategory,
+//       description,
+//       mrp,
+//       price
+//     } = req.body;
+
+//     if (!name || !brand || !mrp || !price) {
+//       return res.status(400).json({
+//         error: "Please provide name, brand, MRP, and price",
+//       });
+//     }
+
+//     // Handle main image
+//     let mainImage = "";
+//     if (req.files['image'] && req.files['image'][0]) {
+//       mainImage = `/uploads/${req.files['image'][0].filename}`;
+//     }
+
+//     // Handle additional images
+//     let additionalImages = [];
+//     if (req.files['images']) {
+//       additionalImages = req.files['images'].map((file) => `/uploads/${file.filename}`);
+//     }
+
+//     const product = new Product({
+//       name,
+//       brand,
+//       mainCategory: mainCategory || "",
+//       subCategory: subCategory || "",
+//       subSubCategory: subSubCategory || "",
+//       description: description || "",
+//       mrp,
+//       price,
+//       mainImage,
+//       additionalImages,
+//     });
+
+//     const savedProduct = await product.save();
+
+//     res.status(201).json({
+//       message: "✅ Product created successfully",
+//       product: savedProduct,
+//     });
+//   } catch (error) {
+//     console.error("❌ Error in createProduct:", error);
+//     res.status(500).json({ error: error.message || "Server error" });
+//   }
+// };
+
 export const createProduct = async (req, res) => {
   try {
     console.log("🧾 Incoming form data:", req.body);
@@ -306,16 +365,21 @@ export const createProduct = async (req, res) => {
       });
     }
 
+    // ✅ Build base URL dynamically
+    const baseUrl = `${req.protocol}://${req.get("host")}`;
+
     // Handle main image
     let mainImage = "";
-    if (req.files['image'] && req.files['image'][0]) {
-      mainImage = `/uploads/${req.files['image'][0].filename}`;
+    if (req.files["image"] && req.files["image"][0]) {
+      mainImage = `${baseUrl}/uploads/${req.files["image"][0].filename}`;
     }
 
     // Handle additional images
     let additionalImages = [];
-    if (req.files['images']) {
-      additionalImages = req.files['images'].map((file) => `/uploads/${file.filename}`);
+    if (req.files["images"]) {
+      additionalImages = req.files["images"].map(
+        (file) => `${baseUrl}/uploads/${file.filename}`
+      );
     }
 
     const product = new Product({
