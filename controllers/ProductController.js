@@ -136,25 +136,29 @@ export const getAllProducts = async (req, res) => {
 
     // ✅ Prepend full URL to images for all products
     const host = `${req.protocol}://${req.get("host")}`;
+
+    // Helper function to normalize any type of image path
+    const normalizeImage = (img) => {
+      if (!img) return null;
+      if (img.startsWith("http")) return img;                  // already full URL
+      if (img.startsWith("/uploads/")) return `${host}${img}`; // starts with /uploads/
+      if (img.includes("uploads/")) return `${host}/${img}`;   // contains uploads/
+      return `${host}/uploads/${img}`;                         // just filename
+    };
+
     const productsWithFullUrl = products.map(p => ({
       ...p._doc,
-      image: p.image
-        ? p.image.startsWith('http')
-          ? p.image
-          : `${host}/uploads/${p.image.split('/').pop()}`
-        : null,
-      images: p.images
-        ? p.images.map(img =>
-            img.startsWith('http') ? img : `${host}/uploads/${img.split('/').pop()}`
-          )
-        : [],
+      image: normalizeImage(p.image),
+      images: p.images ? p.images.map(normalizeImage) : [],
     }));
 
     res.status(200).json(productsWithFullUrl);
   } catch (error) {
+    console.error("Error fetching products:", error);
     res.status(500).json({ message: 'Server Error', error });
   }
 };
+
 
 export const getProductById = async (req, res) => {
   const { id } = req.params;

@@ -26,7 +26,7 @@ import payment from './routes/payment.js';
 import adminRoutes from './routes/adminRoutes.js';
 import pdfRoutes from './routes/pdfRoutes.js';
 import quotationRoutes from "./routes/quotationRoutes.js";
-
+import notifications from './routes/notifications.js'
 // ✅ Path setup
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -148,7 +148,7 @@ app.use('/api/payment', payment);
 app.use('/api/admin', adminRoutes);
 app.use('/api/pdf',pdfRoutes);
 app.use("/api/quotation", quotationRoutes);
-
+app.use("/api/notifications", notifications);
 // ✅ Create Admin User (optional)
 const createAdmin = async () => {
   try {
