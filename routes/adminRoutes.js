@@ -16,11 +16,7 @@ router.get("/stats",authenticateUser, isAdmin, getAdminStats);
 router.get("/orders/recent", authenticateUser, isAdmin, getRecentOrders);
 router.patch("/orders/:id/status", authenticateUser, isAdmin, updateOrderStatus);
 
-router.get(
-  "/adminroutes/recent-activities",
-  authenticateUser,
-  isAdmin,
-  getRecentActivities
-);
+router.get("/activities/recent", authenticateUser, isAdmin, getRecentActivities);
+
 
 export default router;
