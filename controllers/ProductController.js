@@ -87,36 +87,35 @@ const __dirname = dirname(__filename);
 export const getAllProducts = async (req, res) => {
   try {
     const { brands, categories, sort, search } = req.query;
-
     const filter = {};
 
-    // Brand filtering
+    // --- Brand filtering ---
     if (brands) {
-      const brandArray = brands.split(',');
+      const brandArray = brands.split(",");
       filter.brand = { $in: brandArray };
     }
 
-    // Category filtering
+    // --- Category filtering ---
     if (categories) {
-      const categoryArray = categories.split(',');
+      const categoryArray = categories.split(",");
       filter.$or = [
         { mainCategory: { $in: categoryArray } },
         { subCategory: { $in: categoryArray } },
-        { subSubCategory: { $in: categoryArray } }
+        { subSubCategory: { $in: categoryArray } },
       ];
     }
 
-    // Search filtering
+    // --- Search filtering ---
     if (search) {
-      const searchRegex = new RegExp(search, 'i');
+      const searchRegex = new RegExp(search, "i");
       const searchFilter = {
         $or: [
           { name: searchRegex },
           { brand: searchRegex },
           { mainCategory: searchRegex },
           { subCategory: searchRegex },
-          { subSubCategory: searchRegex }
-        ]
+          { subSubCategory: searchRegex },
+        ],
       };
 
       if (filter.$or) {
@@ -127,26 +126,26 @@ export const getAllProducts = async (req, res) => {
       }
     }
 
-    // Sorting
+    // --- Sorting ---
     let sortOption = {};
-    if (sort === 'low') sortOption.price = 1;
-    else if (sort === 'high') sortOption.price = -1;
+    if (sort === "low") sortOption.price = 1;
+    else if (sort === "high") sortOption.price = -1;
 
     const products = await Product.find(filter).sort(sortOption);
 
-    // ✅ Prepend full URL to images for all products
+    // ✅ Normalize images for all products
     const host = `${req.protocol}://${req.get("host")}`;
 
-    // Helper function to normalize any type of image path
     const normalizeImage = (img) => {
       if (!img) return null;
-      if (img.startsWith("http")) return img;                  // already full URL
-      if (img.startsWith("/uploads/")) return `${host}${img}`; // starts with /uploads/
-      if (img.includes("uploads/")) return `${host}/${img}`;   // contains uploads/
-      return `${host}/uploads/${img}`;                         // just filename
+      if (img.startsWith("http")) return img; // already full URL
+      if (img.startsWith("/uploads/")) return `${host}${img}`;
+      if (img.includes("uploads/")) return `${host}/${img}`;
+      if (img.startsWith("image/")) return `${host}/${img}`; // 🔥 old data fix
+      return `${host}/uploads/${img}`;
     };
 
-    const productsWithFullUrl = products.map(p => ({
+    const productsWithFullUrl = products.map((p) => ({
       ...p._doc,
       image: normalizeImage(p.image),
       images: p.images ? p.images.map(normalizeImage) : [],
@@ -155,9 +154,10 @@ export const getAllProducts = async (req, res) => {
     res.status(200).json(productsWithFullUrl);
   } catch (error) {
     console.error("Error fetching products:", error);
-    res.status(500).json({ message: 'Server Error', error });
+    res.status(500).json({ message: "Server Error", error });
   }
 };
+
 
 
 export const getProductById = async (req, res) => {
