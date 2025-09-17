@@ -540,42 +540,89 @@ export const generateQuotation = async (req, res) => {
 };
 
 // export workiing on admin 
+// export const exportProducts = async (req, res) => {
+//   try {
+//     const products = await Product.find();
+
+//     const workbook = new ExcelJS.Workbook();
+//     const worksheet = workbook.addWorksheet('Products');
+
+//     worksheet.columns = [
+//       { header: 'Name', key: 'name', width: 20 },
+//       { header: 'Brand', key: 'brand', width: 20 },
+//       { header: 'Main Category', key: 'mainCategory', width: 20 },
+//       { header: 'Sub Category', key: 'subCategory', width: 20 },
+//       { header: 'Sub Sub Category', key: 'subSubCategory', width: 20 },
+//       { header: 'Price', key: 'price', width: 10 },
+//       { header: 'MRP', key: 'mrp', width: 10 },
+//       { header: 'Description', key: 'description', width: 30 }
+//     ];
+
+//     products.forEach((product) => {
+//       worksheet.addRow(product);
+//     });
+
+//     res.setHeader(
+//       'Content-Type',
+//       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+//     );
+//     res.setHeader('Content-Disposition', 'attachment; filename=products.xlsx');
+
+//     await workbook.xlsx.write(res);
+//     res.end();
+//   } catch (error) {
+//     console.error('Export error:', error);
+//     res.status(500).json({ error: 'Failed to export products' });
+//   }
+// };
 export const exportProducts = async (req, res) => {
   try {
     const products = await Product.find();
 
     const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('Products');
+    const worksheet = workbook.addWorksheet("Products");
 
     worksheet.columns = [
-      { header: 'Name', key: 'name', width: 20 },
-      { header: 'Brand', key: 'brand', width: 20 },
-      { header: 'Main Category', key: 'mainCategory', width: 20 },
-      { header: 'Sub Category', key: 'subCategory', width: 20 },
-      { header: 'Sub Sub Category', key: 'subSubCategory', width: 20 },
-      { header: 'Price', key: 'price', width: 10 },
-      { header: 'MRP', key: 'mrp', width: 10 },
-      { header: 'Description', key: 'description', width: 30 }
+      { header: "Name", key: "name", width: 20 },
+      { header: "Brand", key: "brand", width: 20 },
+      { header: "Main Category", key: "mainCategory", width: 20 },
+      { header: "Sub Category", key: "subCategory", width: 20 },
+      { header: "Sub Sub Category", key: "subSubCategory", width: 20 },
+      { header: "Price", key: "price", width: 10 },
+      { header: "MRP", key: "mrp", width: 10 },
+      { header: "Description", key: "description", width: 30 },
+      { header: "Image", key: "image", width: 40 }, // ✅ main image
+      { header: "Images", key: "images", width: 50 }, // ✅ multiple images
     ];
 
     products.forEach((product) => {
-      worksheet.addRow(product);
+      worksheet.addRow({
+        name: product.name,
+        brand: product.brand,
+        mainCategory: product.mainCategory,
+        subCategory: product.subCategory,
+        subSubCategory: product.subSubCategory,
+        price: product.price,
+        mrp: product.mrp,
+        description: product.description,
+        image: product.image || "", // ✅ main image URL
+        images: product.images ? product.images.join(", ") : "", // ✅ comma-separated
+      });
     });
 
     res.setHeader(
-      'Content-Type',
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     );
-    res.setHeader('Content-Disposition', 'attachment; filename=products.xlsx');
+    res.setHeader("Content-Disposition", "attachment; filename=products.xlsx");
 
     await workbook.xlsx.write(res);
     res.end();
   } catch (error) {
-    console.error('Export error:', error);
-    res.status(500).json({ error: 'Failed to export products' });
+    console.error("Export error:", error);
+    res.status(500).json({ error: "Failed to export products" });
   }
 };
-
 // import working on admin
 // export const importProducts = async (req, res) => {
 //   try {
@@ -630,6 +677,73 @@ export const exportProducts = async (req, res) => {
 
 import RecentActivity from "../models/RecentActivity.js"; // 👈 import this
 
+// export const importProducts = async (req, res) => {
+//   try {
+//     console.log("File received:", req.file ? req.file.originalname : "❌ none");
+
+//     if (!req.file) {
+//       return res
+//         .status(400)
+//         .json({ error: "No file uploaded or wrong file type" });
+//     }
+
+//     const workbook = new ExcelJS.Workbook();
+//     await workbook.xlsx.load(req.file.buffer);
+
+//     const worksheet = workbook.worksheets[0];
+//     if (!worksheet) {
+//       return res
+//         .status(400)
+//         .json({ error: "No worksheet found in Excel file" });
+//     }
+
+//     const products = [];
+
+//     worksheet.eachRow((row, rowNumber) => {
+//       if (rowNumber === 1) return; // skip headers
+
+//       const [
+//         name,
+//         brand,
+//         mainCategory,
+//         subCategory,
+//         subSubCategory,
+//         price,
+//         mrp,
+//         description,
+//       ] = row.values.slice(1);
+
+//       products.push({
+//         name,
+//         brand,
+//         mainCategory,
+//         subCategory,
+//         subSubCategory,
+//         price,
+//         mrp,
+//         description,
+//       });
+//     });
+
+//     await Product.insertMany(products);
+
+//     // ✅ Log the activity
+//     await RecentActivity.create({
+//       description: `Imported ${products.length} products`,
+//       user: req.user._id, // comes from authenticateUser middleware
+//     });
+
+//     res.status(200).json({
+//       message: "Products imported successfully",
+//       count: products.length,
+//     });
+//   } catch (error) {
+//     console.error("Import error:", error.stack || error);
+//     res
+//       .status(500)
+//       .json({ error: error.message || "Failed to import products" });
+//   }
+// };
 export const importProducts = async (req, res) => {
   try {
     console.log("File received:", req.file ? req.file.originalname : "❌ none");
@@ -664,6 +778,8 @@ export const importProducts = async (req, res) => {
         price,
         mrp,
         description,
+        image,
+        images,
       ] = row.values.slice(1);
 
       products.push({
@@ -675,6 +791,8 @@ export const importProducts = async (req, res) => {
         price,
         mrp,
         description,
+        image: image || "", // ✅ main image URL
+        images: images ? images.split(",").map((i) => i.trim()) : [], // ✅ multiple images
       });
     });
 
@@ -697,7 +815,6 @@ export const importProducts = async (req, res) => {
       .json({ error: error.message || "Failed to import products" });
   }
 };
-
 
 
 
