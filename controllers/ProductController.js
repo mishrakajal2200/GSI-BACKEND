@@ -138,13 +138,20 @@ export const getAllProducts = async (req, res) => {
     const host = `${req.protocol}://${req.get("host")}`;
 
     const normalizeImage = (img) => {
-      if (!img) return null;
-      if (img.startsWith("http")) return img;
-      if (img.startsWith("/uploads/")) return `${host}${img}`;
-      if (img.startsWith("uploads/")) return `${host}/${img}`;
-      if (img.startsWith("image/")) return `${host}/${img}`; // ✅ Fix for your case
-      return `${host}/uploads/${img}`;
-    };
+  if (!img) return null;
+  if (img.startsWith("http")) return img;
+
+  // ✅ if stored as "image/american-red.avif"
+  if (img.startsWith("image/")) return `${host}/${img}`;
+
+  // ✅ if stored in /uploads
+  if (img.startsWith("uploads/")) return `${host}/${img}`;
+  if (img.startsWith("/uploads/")) return `${host}${img}`;
+
+  // fallback
+  return `${host}/uploads/${img}`;
+};
+
 
     const productsWithFullUrl = products.map((p) => ({
       ...p._doc,
