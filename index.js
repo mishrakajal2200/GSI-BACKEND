@@ -48,8 +48,9 @@ app.use(cookieParser());
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 
-// 👇 This line serves static files from public folder
-app.use('/image', express.static(path.join(__dirname, 'public/image')));
+// // 👇 This line serves static files from public folder
+// app.use('/image', express.static(path.join(__dirname, 'public/image')));
+app.use('/image', express.static(path.join(__dirname, 'image')));
 
 
 // ✅ CORS Configuration
