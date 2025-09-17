@@ -605,8 +605,8 @@ export const exportProducts = async (req, res) => {
         price: product.price,
         mrp: product.mrp,
         description: product.description,
-        image: product.image || "", // ✅ main image URL
-        images: product.images ? product.images.join(", ") : "", // ✅ comma-separated
+        image: product.image, // ✅ keep saved path like uploads/..
+        images: product.images ? product.images.join(",") : "", // ✅ convert array → string
       });
     });
 
@@ -614,7 +614,10 @@ export const exportProducts = async (req, res) => {
       "Content-Type",
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     );
-    res.setHeader("Content-Disposition", "attachment; filename=products.xlsx");
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=products.xlsx"
+    );
 
     await workbook.xlsx.write(res);
     res.end();
@@ -746,8 +749,6 @@ import RecentActivity from "../models/RecentActivity.js"; // 👈 import this
 // };
 export const importProducts = async (req, res) => {
   try {
-    console.log("File received:", req.file ? req.file.originalname : "❌ none");
-
     if (!req.file) {
       return res
         .status(400)
@@ -791,17 +792,16 @@ export const importProducts = async (req, res) => {
         price,
         mrp,
         description,
-        image: image || "", // ✅ main image URL
-        images: images ? images.split(",").map((i) => i.trim()) : [], // ✅ multiple images
+        image: image || "", // ✅ restore main image string
+        images: images ? images.split(",").map((i) => i.trim()) : [], // ✅ restore array
       });
     });
 
     await Product.insertMany(products);
 
-    // ✅ Log the activity
     await RecentActivity.create({
       description: `Imported ${products.length} products`,
-      user: req.user._id, // comes from authenticateUser middleware
+      user: req.user._id,
     });
 
     res.status(200).json({
@@ -809,12 +809,11 @@ export const importProducts = async (req, res) => {
       count: products.length,
     });
   } catch (error) {
-    console.error("Import error:", error.stack || error);
-    res
-      .status(500)
-      .json({ error: error.message || "Failed to import products" });
+    console.error("Import error:", error);
+    res.status(500).json({ error: error.message });
   }
 };
+
 
 
 
