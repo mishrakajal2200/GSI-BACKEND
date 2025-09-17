@@ -87,15 +87,16 @@ const __dirname = dirname(__filename);
 export const getAllProducts = async (req, res) => {
   try {
     const { brands, categories, sort, search } = req.query;
+
     const filter = {};
 
-    // --- Brand filtering ---
+    // Brand filtering
     if (brands) {
       const brandArray = brands.split(",");
       filter.brand = { $in: brandArray };
     }
 
-    // --- Category filtering ---
+    // Category filtering
     if (categories) {
       const categoryArray = categories.split(",");
       filter.$or = [
@@ -105,7 +106,7 @@ export const getAllProducts = async (req, res) => {
       ];
     }
 
-    // --- Search filtering ---
+    // Search filtering
     if (search) {
       const searchRegex = new RegExp(search, "i");
       const searchFilter = {
@@ -126,28 +127,28 @@ export const getAllProducts = async (req, res) => {
       }
     }
 
-    // --- Sorting ---
+    // Sorting
     let sortOption = {};
     if (sort === "low") sortOption.price = 1;
     else if (sort === "high") sortOption.price = -1;
 
     const products = await Product.find(filter).sort(sortOption);
 
-    // ✅ Normalize images for all products
+    // ✅ Normalize image URLs
     const host = `${req.protocol}://${req.get("host")}`;
 
     const normalizeImage = (img) => {
       if (!img) return null;
-      if (img.startsWith("http")) return img; // already full URL
+      if (img.startsWith("http")) return img;
       if (img.startsWith("/uploads/")) return `${host}${img}`;
-      if (img.includes("uploads/")) return `${host}/${img}`;
-      if (img.startsWith("image/")) return `${host}/${img}`; // 🔥 old data fix
+      if (img.startsWith("uploads/")) return `${host}/${img}`;
+      if (img.startsWith("image/")) return `${host}/${img}`; // ✅ Fix for your case
       return `${host}/uploads/${img}`;
     };
 
     const productsWithFullUrl = products.map((p) => ({
       ...p._doc,
-      image: normalizeImage(p.image),
+      image: normalizeImage(p.image), // ✅ always main image full URL
       images: p.images ? p.images.map(normalizeImage) : [],
     }));
 
