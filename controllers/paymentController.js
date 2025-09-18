@@ -14,18 +14,21 @@ import Order from '../models/Order.js'
 // };
 export const getOrders = async (req, res) => {
   try {
-    // Assuming you store user ID in req.user.id from your authenticate middleware
-    const orders = await Order.find({ customerId: req.user.id }) // use 'customerId' if that's how it's stored
-      .sort({ createdAt: -1 })
-      .populate("items.product", "name price image"); // populate product info if you store product reference
+    // Fetch orders for the logged-in user
+    const orders = await Order.find({ customerId: req.user.id })
+      .sort({ createdAt: -1 });
 
+    // Send response
     res.status(200).json({
       success: true,
-      orders, // send as an array
+      orders,
     });
   } catch (err) {
-    console.error("Error fetching orders:", err);
-    res.status(500).json({ success: false, message: "Failed to fetch orders" });
+    console.error("Failed to fetch orders:", err);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch orders",
+    });
   }
 };
 
