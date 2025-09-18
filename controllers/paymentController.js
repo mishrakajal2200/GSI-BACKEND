@@ -4,11 +4,28 @@ import Razorpay from "razorpay";
 import Order from '../models/Order.js'
 // controllers/paymentController.js
 
+// export const getOrders = async (req, res) => {
+//   try {
+//     const orders = await Order.find({ user: req.user.id }).sort({ createdAt: -1 });
+//     res.status(200).json({ success: true, orders }); // ✅ Return as object
+//   } catch (err) {
+//     res.status(500).json({ message: "Failed to fetch orders" });
+//   }
+// };
 export const getOrders = async (req, res) => {
   try {
-    const orders = await Order.find({ user: req.user.id }).sort({ createdAt: -1 });
-    res.status(200).json({ success: true, orders }); // ✅ Return as object
+    // Debugging
+    console.log("User ID from token:", req.user.id);
+
+    const orders = await Order.find({
+      customerId: new mongoose.Types.ObjectId(req.user.id),
+    }).sort({ createdAt: -1 });
+
+    console.log("Orders fetched:", orders.length);
+
+    res.status(200).json({ success: true, orders });
   } catch (err) {
+    console.error("Failed to fetch orders:", err);
     res.status(500).json({ message: "Failed to fetch orders" });
   }
 };
