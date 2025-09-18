@@ -227,5 +227,36 @@ export const updateOrderStatus = async (req, res) => {
   }
 };
 
+// Get monthly sales data
+export const getMonthlySales = async (req, res) => {
+  try {
+    const sales = await Order.aggregate([
+      {
+        $group: {
+          _id: { $month: "$createdAt" }, // group by month
+          totalSales: { $sum: "$total" }, // sum order totals
+        },
+      },
+      { $sort: { "_id": 1 } }, // sort by month
+    ]);
 
+    // Map results to chart-friendly format
+    const months = [
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+    ];
+
+    const formatted = months.map((name, index) => {
+      const monthData = sales.find((s) => s._id === index + 1);
+      return {
+        name,
+        sales: monthData ? monthData.totalSales : 0,
+      };
+    });
+
+    res.status(200).json(formatted);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 

@@ -5,6 +5,7 @@ import express from "express";
 import { adminLogin, getAdminStats,getRecentOrders,updateOrderStatus} from "../controllers/adminController.js";
 import  { authenticateUser,isAdmin } from "../middleware/authMiddleware.js";
 import { getRecentActivities } from "../controllers/recentActivityController.js";
+import { getMonthlySales } from "../controllers/adminController.js";
 const router = express.Router();
 
 router.post("/adminlogin/login", adminLogin);
@@ -18,5 +19,7 @@ router.patch("/orders/:id/status", authenticateUser, isAdmin, updateOrderStatus)
 
 router.get("/activities/recent", authenticateUser, isAdmin, getRecentActivities);
 
+// Sales chart data
+router.get("/sales/monthly", authenticateUser, isAdmin, getMonthlySales);
 
 export default router;
