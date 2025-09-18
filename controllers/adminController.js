@@ -178,7 +178,7 @@ export const getAdminStats = async (req, res) => {
 export const getRecentOrders = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = 5; // number of orders per page
+    const limit = 5;
     const skip = (page - 1) * limit;
 
     const totalOrders = await Order.countDocuments();
@@ -186,14 +186,14 @@ export const getRecentOrders = async (req, res) => {
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
-      .populate("user", "name email"); // fetch customer info
+      .populate("customerId", "name email"); // 🔹 match schema
 
     res.json({
       orders: orders.map((order) => ({
-        _id: order._id, // 🔹 keep _id for frontend
-        customer: order.user?.name || "Unknown",
-        status: order.status,
-        amount: order.totalPrice,
+        _id: order._id,
+        customer: order.customerId?.name || "Unknown", // 🔹 match schema
+        status: order.fulfillmentStatus,              // 🔹 match schema
+        amount: order.total,                          // 🔹 match schema
       })),
       hasMore: skip + limit < totalOrders,
     });
@@ -202,6 +202,7 @@ export const getRecentOrders = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
 
 // ✅ Update Order Status
 export const updateOrderStatus = async (req, res) => {
