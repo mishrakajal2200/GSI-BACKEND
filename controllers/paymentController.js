@@ -14,19 +14,18 @@ import Order from '../models/Order.js'
 // };
 export const getOrders = async (req, res) => {
   try {
-    // Debugging
-    console.log("User ID from token:", req.user.id);
+    // Assuming you store user ID in req.user.id from your authenticate middleware
+    const orders = await Order.find({ customerId: req.user.id }) // use 'customerId' if that's how it's stored
+      .sort({ createdAt: -1 })
+      .populate("items.product", "name price image"); // populate product info if you store product reference
 
-    const orders = await Order.find({
-      customerId: new mongoose.Types.ObjectId(req.user.id),
-    }).sort({ createdAt: -1 });
-
-    console.log("Orders fetched:", orders.length);
-
-    res.status(200).json({ success: true, orders });
+    res.status(200).json({
+      success: true,
+      orders, // send as an array
+    });
   } catch (err) {
-    console.error("Failed to fetch orders:", err);
-    res.status(500).json({ message: "Failed to fetch orders" });
+    console.error("Error fetching orders:", err);
+    res.status(500).json({ success: false, message: "Failed to fetch orders" });
   }
 };
 
