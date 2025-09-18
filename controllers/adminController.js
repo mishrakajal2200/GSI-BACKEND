@@ -152,26 +152,39 @@ export const adminLogin = async (req, res) => {
 // };
 export const getAdminStats = async (req, res) => {
   try {
-
-    const activeUsers = await User.countDocuments({ isActive: true });
+    // Total Orders
     const totalOrders = await Order.countDocuments();
 
-    const totalRevenue = await Order.aggregate([
-      { $match: { isPaid: true } },
-      { $group: { _id: null, total: { $sum: "$totalPrice" } } }
+    // Total Sales = total orders count
+    const totalSales = totalOrders;
+
+    // Total Revenue (sum of paid orders)
+    const totalRevenueAgg = await Order.aggregate([
+      { $match: { paymentStatus: "paid" } },   // ✅ check schema
+      { $group: { _id: null, total: { $sum: "$total" } } } // ✅ check schema
     ]);
+    const totalRevenue = totalRevenueAgg[0]?.total || 0;
+
+    // Active Users (last 30 days)
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const activeUsers = await User.countDocuments({
+      lastLogin: { $gte: thirtyDaysAgo }
+    });
 
     res.status(200).json({
-      activeUsers,
       totalOrders,
-      totalSales: totalOrders,
-      totalRevenue: totalRevenue[0]?.total || 0,
+      totalSales,
+      totalRevenue,
+      activeUsers,
     });
   } catch (error) {
-    console.error('Failed to fetch admin stats', error);
-    res.status(500).json({ message: 'Server error', error: error.message });
+    console.error("Failed to fetch admin stats", error);
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
 
 
 // recent orders
