@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "type": "module",
-  "proxy": "https://gsi-backend-1.onrender.com",
+  "proxy": "https://gsienterprises.com",
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
