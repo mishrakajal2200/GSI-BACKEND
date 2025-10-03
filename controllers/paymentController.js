@@ -338,23 +338,38 @@ export const createRazorpayOrder = async (req, res) => {
   try {
     const { amount } = req.body;
 
+    // Check if amount is provided
     if (!amount) {
       return res.status(400).json({ message: "Amount is required." });
     }
 
+    // Validate amount: must be a number and within Razorpay limit (< ₹1 crore)
+    if (typeof amount !== "number" || amount <= 0) {
+      return res.status(400).json({ message: "Amount must be a positive number." });
+    }
+
+    const amountInPaise = amount * 100;
+
+    if (amountInPaise > 10000000) {
+      return res.status(400).json({ message: "Amount exceeds Razorpay limit (₹10,00,000)." });
+    }
+
+    // Order options
     const orderOptions = {
-      amount: amount * 100, // convert rupees to paise
+      amount: amountInPaise,
       currency: "INR",
       receipt: `receipt_${Date.now()}`,
       payment_capture: 1,
     };
 
+    // Create order
     razorpay.orders.create(orderOptions, (error, order) => {
       if (error) {
         console.error("Razorpay order creation error:", error);
-        return res.status(500).json({ message: "Error creating order", error: error.message });
+        return res.status(500).json({ message: "Error creating order", error });
       }
 
+      // Return order details
       res.status(200).json({
         key: process.env.RAZORPAY_KEY_ID,
         orderId: order.id,
