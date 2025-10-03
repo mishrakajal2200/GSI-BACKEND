@@ -289,6 +289,46 @@ export const placeCODOrder = async (req, res) => {
 };
 
 
+// const razorpay = new Razorpay({
+//   key_id: process.env.RAZORPAY_KEY_ID,
+//   key_secret: process.env.RAZORPAY_KEY_SECRET,
+// });
+
+// export const createRazorpayOrder = async (req, res) => {
+//   try {
+//     const { amount } = req.body;
+
+//     if (!amount) {
+//       return res.status(400).json({ message: "Amount is required." });
+//     }
+
+//     const orderOptions = {
+//       amount: amount, // paise
+//       currency: "INR",
+//       receipt: "receipt#1",
+//       payment_capture: 1,
+//     };
+
+//     razorpay.orders.create(orderOptions, (error, order) => {
+//       if (error) {
+//         console.error("Razorpay order creation error:", error);
+//         return res.status(500).json({ message: "Error creating order", error: error.message });
+//       }
+
+//       res.status(200).json({
+//         key: process.env.RAZORPAY_KEY_ID,
+//         orderId: order.id,
+//         amount: order.amount,
+//         currency: order.currency,
+//       });
+//     });
+//   } catch (error) {
+//     console.error("Server error in createRazorpayOrder:", error);
+//     res.status(500).json({ message: "Server error", error: error.message });
+//   }
+// };
+
+
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
   key_secret: process.env.RAZORPAY_KEY_SECRET,
@@ -303,9 +343,9 @@ export const createRazorpayOrder = async (req, res) => {
     }
 
     const orderOptions = {
-      amount: amount, // paise
+      amount: amount * 100, // convert rupees to paise
       currency: "INR",
-      receipt: "receipt#1",
+      receipt: `receipt_${Date.now()}`,
       payment_capture: 1,
     };
 
