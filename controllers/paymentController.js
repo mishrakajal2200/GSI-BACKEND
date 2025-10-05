@@ -329,27 +329,30 @@ export const placeCODOrder = async (req, res) => {
 // };
 
 
-const razorpay = new Razorpay({
-  key_id: console.log("RAZORPAY_KEY_ID:", process.env.RAZORPAY_KEY_ID),
-  key_secret: console.log("RAZORPAY_KEY_SECRET:", process.env.RAZORPAY_KEY_SECRET)
-});
 
 export const createRazorpayOrder = async (req, res) => {
   try {
-    // Validate amount
     let { amount } = req.body;
 
     if (!amount) {
       return res.status(400).json({ message: "Amount is required." });
     }
 
-    // Ensure amount is a number
     amount = Number(amount);
     if (isNaN(amount) || amount <= 0) {
       return res.status(400).json({ message: "Invalid amount." });
     }
 
-    // Razorpay order options
+    // ✅ Create Razorpay instance INSIDE function
+    const razorpay = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID,
+      key_secret: process.env.RAZORPAY_KEY_SECRET,
+    });
+
+    // ✅ Log them safely for debugging (optional)
+    console.log("RAZORPAY_KEY_ID:", process.env.RAZORPAY_KEY_ID);
+    console.log("RAZORPAY_KEY_SECRET:", process.env.RAZORPAY_KEY_SECRET);
+
     const orderOptions = {
       amount: amount * 100, // convert rupees to paise
       currency: "INR",
@@ -357,26 +360,20 @@ export const createRazorpayOrder = async (req, res) => {
       payment_capture: 1,
     };
 
-    // Create Razorpay order
-    razorpay.orders.create(orderOptions, (error, order) => {
-      if (error) {
-        console.error("Full Razorpay error:", error); // log full error
-        return res.status(500).json({
-          message: "Error creating order",
-          error: error.description || error.message || error,
-        });
-      }
+    // ✅ Create order using async/await instead of callback
+    const order = await razorpay.orders.create(orderOptions);
 
-      // Respond with order details
-      res.status(200).json({
-        key: process.env.RAZORPAY_KEY_ID,
-        orderId: order.id,
-        amount: order.amount,
-        currency: order.currency,
-      });
+    return res.status(200).json({
+      key: process.env.RAZORPAY_KEY_ID,
+      orderId: order.id,
+      amount: order.amount,
+      currency: order.currency,
     });
   } catch (error) {
     console.error("Server error in createRazorpayOrder:", error);
-    res.status(500).json({ message: "Server error", error: error.message });
+    res.status(500).json({
+      message: "Error creating Razorpay order",
+      error: error.message,
+    });
   }
 };
