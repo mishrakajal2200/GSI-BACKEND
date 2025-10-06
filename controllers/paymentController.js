@@ -335,21 +335,26 @@ export const createRazorpayOrder = async (req, res) => {
     let { amount } = req.body;
 
     if (!amount) {
+      console.error("❌ Amount missing in request body");
       return res.status(400).json({ message: "Amount is required." });
     }
 
     amount = Number(amount);
     if (isNaN(amount) || amount <= 0) {
+      console.error("❌ Invalid amount:", amount);
       return res.status(400).json({ message: "Invalid amount." });
     }
 
+    console.log("✅ Incoming request to create Razorpay order for amount:", amount);
+
+    // ✅ Initialize Razorpay
     const razorpay = new Razorpay({
       key_id: process.env.RAZORPAY_KEY_ID,
       key_secret: process.env.RAZORPAY_KEY_SECRET,
     });
 
     console.log("✅ RAZORPAY_KEY_ID:", process.env.RAZORPAY_KEY_ID);
-    console.log("✅ RAZORPAY_KEY_SECRET Loaded:", !!process.env.RAZORPAY_KEY_SECRET);
+    console.log("✅ RAZORPAY_KEY_SECRET loaded:", !!process.env.RAZORPAY_KEY_SECRET);
 
     const orderOptions = {
       amount: amount * 100,
@@ -358,7 +363,12 @@ export const createRazorpayOrder = async (req, res) => {
       payment_capture: 1,
     };
 
+    console.log("🌀 Creating order with options:", orderOptions);
+
+    // ✅ Try to create order
     const order = await razorpay.orders.create(orderOptions);
+
+    console.log("✅ Razorpay order created successfully:", order);
 
     return res.status(200).json({
       success: true,
@@ -368,7 +378,11 @@ export const createRazorpayOrder = async (req, res) => {
       currency: order.currency,
     });
   } catch (error) {
-    console.error("🧨 Razorpay Error Details:", error);
+    console.error("🧨 Razorpay Order Creation Failed!");
+    console.error("Error name:", error.name);
+    console.error("Error message:", error.message);
+    console.error("Error stack:", error.stack);
+    console.error("Full error object:", JSON.stringify(error, null, 2));
 
     return res.status(500).json({
       success: false,
