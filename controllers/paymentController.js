@@ -394,20 +394,19 @@ export const placeCODOrder = async (req, res) => {
 
 export const createRazorpayOrder = async (req, res) => {
   try {
-    let { amount } = req.body; // Amount in rupees from frontend
+    let { amount } = req.body; // amount in rupees from frontend
+    console.log("💰 Incoming amount from frontend (INR):", amount);
 
     if (!amount || isNaN(amount) || amount <= 0) {
       return res.status(400).json({ message: "Invalid amount" });
     }
 
-    console.log("Incoming amount (INR):", amount);
-
-    // Convert rupees to paise (Razorpay expects paise)
+    // Convert rupees → paise
     const amountInPaise = Math.round(amount * 100);
+    console.log("🔹 Amount converted to paise:", amountInPaise);
 
-    // Initialize Razorpay
     const razorpay = new Razorpay({
-      key_id: process.env.RAZORPAY_KEY_ID,      // Live or test key
+      key_id: process.env.RAZORPAY_KEY_ID,
       key_secret: process.env.RAZORPAY_KEY_SECRET,
     });
 
@@ -418,9 +417,9 @@ export const createRazorpayOrder = async (req, res) => {
       payment_capture: 1,
     });
 
-    console.log("Razorpay order created:", order);
+    console.log("✅ Razorpay Order Created:", order);
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       key: process.env.RAZORPAY_KEY_ID,
       orderId: order.id,
@@ -428,7 +427,10 @@ export const createRazorpayOrder = async (req, res) => {
       currency: order.currency,
     });
   } catch (error) {
-    console.error("Error creating Razorpay order:", error);
-    res.status(500).json({ success: false, message: error.message });
+    console.error("❌ Razorpay Error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Error creating Razorpay order",
+    });
   }
 };
