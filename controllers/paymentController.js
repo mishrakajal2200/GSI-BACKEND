@@ -401,8 +401,7 @@ export const createRazorpayOrder = async (req, res) => {
 
     console.log("Incoming amount (INR):", amount);
 
-    // ❌ Do NOT convert to paise if you want Razorpay popup to show exact rupees
-    const amountInPaise = amount; // send as-is
+    const amountInPaise = amount * 100; // Razorpay needs paise
 
     const razorpay = new Razorpay({
       key_id: process.env.RAZORPAY_KEY_ID,
@@ -422,12 +421,14 @@ export const createRazorpayOrder = async (req, res) => {
       success: true,
       key: process.env.RAZORPAY_KEY_ID,
       orderId: order.id,
-      amount: order.amount, // will show exact ₹799 in popup
+      amount: order.amount, // in paise
       currency: order.currency,
+      displayAmount: amount, // add this for frontend display
     });
   } catch (error) {
     console.error("Error creating Razorpay order:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
 
