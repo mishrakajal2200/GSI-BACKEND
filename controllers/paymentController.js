@@ -393,7 +393,7 @@ export const placeCODOrder = async (req, res) => {
 // };
 export const createRazorpayOrder = async (req, res) => {
   try {
-    let { amount } = req.body; // Amount in rupees from frontend
+    let { amount } = req.body; // amount in rupees from frontend
 
     if (!amount || isNaN(amount) || amount <= 0) {
       return res.status(400).json({ message: "Invalid amount" });
@@ -401,10 +401,9 @@ export const createRazorpayOrder = async (req, res) => {
 
     console.log("Incoming amount (INR):", amount);
 
-    // Convert rupees → paise
-    const amountInPaise = Math.round(amount * 100);
+    // ❌ Do NOT convert to paise if you want Razorpay popup to show exact rupees
+    const amountInPaise = amount; // send as-is
 
-    // Initialize Razorpay instance
     const razorpay = new Razorpay({
       key_id: process.env.RAZORPAY_KEY_ID,
       key_secret: process.env.RAZORPAY_KEY_SECRET,
@@ -423,7 +422,7 @@ export const createRazorpayOrder = async (req, res) => {
       success: true,
       key: process.env.RAZORPAY_KEY_ID,
       orderId: order.id,
-      amount: order.amount, // paise
+      amount: order.amount, // will show exact ₹799 in popup
       currency: order.currency,
     });
   } catch (error) {
@@ -431,3 +430,4 @@ export const createRazorpayOrder = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
